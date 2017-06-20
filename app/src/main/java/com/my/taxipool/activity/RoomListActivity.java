@@ -72,7 +72,7 @@ public class RoomListActivity extends AppCompatActivity {
                     JSONArray responseArray = nt.NetworkRoomList(url);
                     Log.d("responseArray", responseArray.toString());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+                    // test
                     for(int i=0; i < responseArray.length();i++){
                         JSONObject jsonobject = responseArray.getJSONObject(i);
                         room_no = jsonobject.getInt("room_no");
