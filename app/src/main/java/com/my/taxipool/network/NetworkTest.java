@@ -16,6 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class NetworkTest {
+
+
     public JSONObject jsonNetwork(String url){
         HttpURLConnection c = null;
         Log.d("dduni url: ",url.toString());
