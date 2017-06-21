@@ -5,11 +5,10 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_sub_boardlist"
-            android:title="내 합승 기록" />
+            android:title="내 합승 기록"/>
         <item
             android:id="@+id/nav_sub_blocklist"
-            android:title="차단 목록"
-            />
+            android:title="차단 목록"/>
     </group>
 
     <item android:title="기타">

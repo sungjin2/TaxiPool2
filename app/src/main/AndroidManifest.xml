@@ -47,6 +47,5 @@
         <activity android:name=".activity.RoomActivity"/>
 
         <activity android:name=".activity.BlockActivity"/>
-        <activity android:name=".activity.RoomCalculatorActivity">
     </application>
 </manifest>
