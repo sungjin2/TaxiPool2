@@ -25,10 +25,10 @@ import java.util.Map;
  */
 
 public class TabChat extends Fragment {
-    LinearLayout layout;
-    ImageView sendButton;    EditText messageArea;
-    ScrollView scrollView;    Firebase reference;     //1, reference2;
-    String bangjang;
+    private LinearLayout layout;
+    private ImageView sendButton;    private EditText messageArea;
+    private ScrollView scrollView;    private Firebase reference;     //1, reference2;
+    private int room_no;
     private View rootView;
 
     @Override
@@ -41,10 +41,10 @@ public class TabChat extends Fragment {
         scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
         //bangjang = getIntent().getStringExtra("bangjang");
 
-        Firebase.setAndroidContext(getContext());
-        reference = new Firebase("https://taxikitri-1495966509456.firebaseio.com/messages/" + "test" /*bangjang*/);
-        //reference2 = new Firebase("https://taxikitri-1495966509456.firebaseio.com/messages/" + UserDetails.chatWith + "_" + UserDetails.username);
 
+        Firebase.setAndroidContext(getContext());
+        reference = new Firebase("https://taxikitri-1495966509456.firebaseio.com/messages/" + room_no);
+        //reference2 = new Firebase("https://taxikitri-1495966509456.firebaseio.com/messages/" + UserDetails.chatWith + "_" + UserDetails.username);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,5 +114,9 @@ public class TabChat extends Fragment {
 
         layout.addView(textView);
         scrollView.fullScroll(View.FOCUS_DOWN);
+    }
+
+    public void setRoom_no(int room_no) {
+        this.room_no = room_no;
     }
 }
