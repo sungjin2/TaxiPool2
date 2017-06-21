@@ -1,6 +1,7 @@
 package com.my.taxipool.activity;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -273,12 +274,22 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
+
+    //햄버거 네비게이션 선택
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == 0) {
+        /*if (id == 0) {
         } else if (id == 1) {
         } else if (id == 2) {
+        }*/
+        switch (id) {
+            case R.id.nav_sub_boardlist:
+                break;
+            case R.id.nav_sub_blocklist:
+                Intent intent = new Intent(HomeActivity.this, BlockActivity.class);
+                startActivity(intent);
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
