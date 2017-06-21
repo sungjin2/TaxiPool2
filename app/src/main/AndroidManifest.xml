@@ -45,5 +45,7 @@
         <activity android:name=".activity.RoomListActivity"/>
         <activity android:name=".activity.RoomRegistActivity"/>
         <activity android:name=".activity.RoomActivity"/>
+
+        <activity android:name=".activity.BlockActivity"/>
     </application>
 </manifest>
