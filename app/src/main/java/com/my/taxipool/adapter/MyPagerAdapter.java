@@ -17,7 +17,6 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     public MyPagerAdapter(android.support.v4.app.FragmentManager manager) {
         super(manager);
     }
-
     @Override
     public Fragment getItem(int position) {
         return mFragmentList.get(position);
