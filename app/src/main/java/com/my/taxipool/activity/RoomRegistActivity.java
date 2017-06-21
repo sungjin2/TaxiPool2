@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,16 +30,21 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.my.taxipool.R;
-import com.my.taxipool.network.NetworkTest;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.Room;
 import com.my.taxipool.vo.TmpRoom;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
 
 public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyCallback{
     TextView tv_regist_start_spot,tv_regist_end_spot;
@@ -166,16 +172,54 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                 new Thread() {
                     @Override
                     public void run() {
-                        String url = "http://192.168.12.30:8888/taxi_db_test2/registroom.do?"+room.toQuery();
-                        NetworkTest nt = new NetworkTest();
-                        room_no = nt.stringNetwork(url);
+                        URL url;
+                        HttpURLConnection conn;
 
-                        intent.putExtra("room_num",room_no);
-                        intent.putExtra("isBangjang",true);
+                        try {
+                            url = new URL("http://192.168.12.30:8888/taxi_db_test2/registroom.do");
+                            conn = (HttpURLConnection)url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoInput(true);
+                            conn.setDoOutput(true);
+                            conn.setUseCaches(false);
+                            Log.i("SuccessActivity","conn1"+ conn.getRequestMethod());
+
+                            //QueryString을 추가하는 부분, UTF-8로 한글까지 Server에서 이상없이 받을 수 있음
+                            OutputStream os = conn.getOutputStream();
+                            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                            bw.write(room.toQuery());
+                            bw.flush();
+                            bw.close();
+                            final int responseCode = conn.getResponseCode();
+
+                            switch (responseCode){
+                                case HttpURLConnection.HTTP_OK:
+                                    //응답결과 수신
+                                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                                    String responseData = null;
+                                    while((responseData = br.readLine())!=null) {
+                                        Log.d("ddu 응답결과:", String.valueOf(responseCode));
+                                        room_no = responseData;
+                                    }
+                                    break;
+                                case HttpURLConnection.HTTP_NOT_FOUND:
+                                    Log.d("ddu network error:", "NOT FOUND");
+                                    break;
+                                default:
+                                    Log.d("ddu response code:", String.valueOf(responseCode));
+                                    break;
+                            }
+                        Set.Save(RoomRegistActivity.this,"room_num",room_no);
                         Set.Save(RoomRegistActivity.this,"status",YES_MEMBER);
                         startActivity(intent);
+                        finish();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }.start();
+//                        startActivity(intent);
+
             }
         });
     }
@@ -239,7 +283,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        googlemapTmp = googleMap;
+        //googlemapTmp = googleMap;
         startMarkerOption = new MarkerOptions();
         endMarkerOption = new MarkerOptions();
         LatLng start_latlon = new LatLng(tmpRoom.getStartLat(), tmpRoom.getStartLon());
@@ -254,9 +298,9 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         endMarkerOption.title("도착지");
         endMarkerOption.snippet(tmpRoom.getEndSpot());
 
-        googlemapTmp.addMarker(startMarkerOption);
-        googlemapTmp.addMarker(endMarkerOption);
-        googlemapTmp.moveCamera(CameraUpdateFactory.newLatLng(cneter_latlon));
-        googlemapTmp.animateCamera(CameraUpdateFactory.zoomTo(5));
+        googleMap.addMarker(startMarkerOption);
+        googleMap.addMarker(endMarkerOption);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(cneter_latlon));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
     }
 }

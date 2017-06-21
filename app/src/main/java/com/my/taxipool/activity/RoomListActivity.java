@@ -66,7 +66,10 @@ public class RoomListActivity extends AppCompatActivity {
             public void run(){
                 //서버연결
                 String url = "http://192.168.12.30:8888/taxi_db_test2/roomlist.do" +
-                        "?start_x=46.90297055989504&start_y=78.57082641983735&end_x=126.90557867288&end_y=37.494596897257";
+                        "?start_x=" + tmpRoom.getStartLat() +
+                        "&start_y=" + tmpRoom.getStartLon()+
+                        "&end_x=" + tmpRoom.getEndLat() +
+                        "&end_y=" + tmpRoom.getEndLon() ;
                 try{
                     NetworkRoomList nt = new NetworkRoomList();
                     JSONArray responseArray = nt.NetworkRoomList(url);
