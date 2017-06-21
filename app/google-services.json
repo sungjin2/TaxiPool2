@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:582712323175:android:5bf17680ed26b5f6",
         "android_client_info": {
-          "package_name": "com.my.taxipool"
+          "package_name": "my.hyeon.taxikitri"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "582712323175-vpjn9a6j5hn1nf2ul3d19ttffgobusc0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.my.taxipool",
+            "package_name": "my.hyeon.taxikitri",
             "certificate_hash": "874b9bf7a990c6277c339894e931a9ee24201bee"
           }
         },
@@ -102,6 +102,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "582712323175-kkdvbv2otfa811t59dr256gsj060ubbg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.my.taxipool",
+            "certificate_hash": "cfdd769c3ef418b0218ef38e5c993d12c9e577ef"
+          }
+        },
+        {
+          "client_id": "582712323175-hl0r9o7u1aa534b0j2ej3fu6irljkh2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.my.taxipool",
+            "certificate_hash": "95f4c34262ae93bb895d8260c06a6ed84ee6e9e8"
+          }
+        },
         {
           "client_id": "582712323175-ijmvv4p43tddp9r79lsuh43rm88fuslb.apps.googleusercontent.com",
           "client_type": 1,

@@ -12,6 +12,8 @@ public class CustomerInfo {
     String nickname;
     String info_gender;
 
+    public CustomerInfo(){
+    }
     public CustomerInfo(String info_id, String phone_no, String info_name, String nickname, String info_gender) {
         this.info_id = info_id;
         this.phone_no = phone_no;

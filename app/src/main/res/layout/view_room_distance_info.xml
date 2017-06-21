@@ -17,7 +17,7 @@
             android:textColor="@color/colorPink"
             android:text="출발지"/>
         <TextView
-            android:id="@+id/tv_room_startspot"
+            android:id="@+id/tv_info_startspot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="19sp"
@@ -33,7 +33,6 @@
         android:gravity="left|center_vertical">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="7dp"
@@ -41,7 +40,7 @@
             android:textColor="@color/colorPink" />
 
         <TextView
-            android:id="@+id/tv_room_endspot"
+            android:id="@+id/tv_info_endspot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ㅇㅇ시 ㅇㅇ동 ㅇㅇ아파트"
@@ -69,7 +68,7 @@
             android:src="@mipmap/ic_launcher"
             android:textColor="@color/colorPink" />
         <TextView
-        android:id="@+id/tv_room_detail"
+        android:id="@+id/tv_info_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
