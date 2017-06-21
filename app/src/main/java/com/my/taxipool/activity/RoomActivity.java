@@ -128,7 +128,7 @@ public class RoomActivity extends AppCompatActivity{
         String url = "http://192.168.12.30:8888/taxi_db_test2/roomsharepeople.do?"+
                 "room_no="+room_no;
         NetworkTest nt = new NetworkTest();
-        JSONArray roomInfoObject = nt.arrayJSONNetwork(url);
+        JSONArray roomInfoObject = nt.jsonArrayNetwork(url);
         if(roomInfoObject == null){
             Log.d("ddu RoomActivity","no room");
         }
