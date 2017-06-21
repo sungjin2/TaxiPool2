@@ -106,9 +106,12 @@ public class Room {
                 + ", start_time=" + start_time + ", room_state=" + room_state + "]";
     }
     public String toQuery(){
+        String start_spot = this.start_spot.replaceAll(" ", "%20");
+        String end_spot = this.end_spot.replaceAll(" ", "%20");
         return "admin_id=" + admin_id + "&max_cnt=" + max_cnt + "&payment=" +payment
                 + "&room_gender=" + room_gender+ "&alcohol=" + alcohol+ "&start_spot=" + start_spot+ "&end_spot="
-                + end_spot+ "&start_x=" + start_x+ "&start_y=" + start_y + "&end_x=" + end_x+ "&end_y=" + end_y+", start_time=" + start_time;
+                + end_spot+ "&start_x=" + start_x+ "&start_y=" + start_y + "&end_x=" + end_x+ "&end_y=" + end_y;
+//                +"&start_time=" + start_time;
     }
 
     public double getDistance_one() {
