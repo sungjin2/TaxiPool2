@@ -21,7 +21,7 @@ public class GetDistance {
                 "&key=" + api_key;
 
         NetworkTest nt = new NetworkTest();
-        JSONObject response = nt.jsonNetwork(url);
+        JSONObject response = nt.jsonObjectNetwork(url);
         if(response != null){
             Log.i("★log", response.toString());
         }
@@ -36,7 +36,7 @@ public class GetDistance {
                 "&end_x=" + endLon +
                 "&end_y=" + endLat ;
         NetworkTest nt = new NetworkTest();
-        JSONObject response = nt.jsonNetwork(url);
+        JSONObject response = nt.jsonObjectNetwork(url);
         if(response != null){
             Log.i("★log", response.toString());
         }

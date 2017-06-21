@@ -1,9 +1,6 @@
 package com.my.taxipool.network;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import com.my.taxipool.activity.BlockActivity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,8 +17,6 @@ import java.net.URL;
 public class NetworkBlockCancel {
     public void sendData(final String info_id, final String block_info_id) {
         Log.d("NetworkBlockCancel1",info_id);
-
-
                 new Thread() {
                     @Override
                     public void run() {
