@@ -7,6 +7,7 @@ import com.my.taxipool.R;
  */
 
 public class BlockCustomerInfo {
+    //
     String info_id;
     String b_nickname;
     String b_info_id;
