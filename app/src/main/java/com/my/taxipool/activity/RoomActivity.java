@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.MyPagerAdapter;
-import com.my.taxipool.network.NetworkTest;
+import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
@@ -61,12 +61,8 @@ public class RoomActivity extends AppCompatActivity{
         room_num = Set.Load(RoomActivity.this, "room_num", "0");
 //        Log.i("ddu room_status",String.valueOf(status));
 //        Log.i("ddu room_num",String.valueOf(room_num));
-        new Thread() {
-            @Override
-            public void run() {
-                getRoomInfo(room_num);
-            }
-        }.start();
+        //getRoomInfo(room_num);
+        getRoomInfo(String.valueOf(2));
     }
 
     private void set_TabViews() {
@@ -104,52 +100,63 @@ public class RoomActivity extends AppCompatActivity{
         }
         return super.onOptionsItemSelected(item);
     }
-    private void getRoomInfo(String room_no){
-        String url = "http://192.168.12.30:8888/taxi_db_test2/roominfo.do?"+
-                "room_no="+room_no;
-        NetworkTest nt = new NetworkTest();
-        JSONObject roomInfoObject = nt.jsonObjectNetwork(url);
-        if(roomInfoObject == null){
-            Log.d("ddu RoomActivity","no room");
-        }
-        try{
-            room = new Room(roomInfoObject.getInt("room_no"),roomInfoObject.getString("admin_id"),roomInfoObject.getInt("max_cnt"),
-                    roomInfoObject.getString("payment"),roomInfoObject.getString("room_gender"),roomInfoObject.getString("alcohol"),
-                    roomInfoObject.getString("start_spot"), roomInfoObject.getString("end_spot"),
-                    roomInfoObject.getString("start_x"),roomInfoObject.getString("start_y"),
-                    roomInfoObject.getString("end_x"),roomInfoObject.getString("end_y"),
-                    new Date(),roomInfoObject.getString("room_state"),roomInfoObject.getInt("current_cnt"));
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-        getSharePeople(room_no);
+    private void getRoomInfo(final String room_no){
+        new CommuServer(CommuServer.SELECT_ROOM_INFO, new CommuServer.OnCommuListener() {
+            @Override
+            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                Log.d("ddu result!!",object.toString());
+                JSONObject roomInfoObject = object;
+                try{
+                    room = new Room(roomInfoObject.getInt("room_no"),roomInfoObject.getString("admin_id"),roomInfoObject.getInt("max_cnt"),
+                            roomInfoObject.getString("payment"),roomInfoObject.getString("room_gender"),roomInfoObject.getString("alcohol"),
+                            roomInfoObject.getString("start_spot"), roomInfoObject.getString("end_spot"),
+                            roomInfoObject.getString("start_x"),roomInfoObject.getString("start_y"),
+                            roomInfoObject.getString("end_x"),roomInfoObject.getString("end_y"),
+                            new Date(),roomInfoObject.getString("room_state"),roomInfoObject.getInt("current_cnt"));
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+                getSharePeople(room_no);
+            }
+            @Override
+            public void onFailed(Error error) {
+            }
+        }).addParam("room_no", room_no).start();
+
     }
     private void getSharePeople(String room_no){
-        String url = "http://192.168.12.30:8888/taxi_db_test2/roomsharepeople.do?"+
-                "room_no="+room_no;
-        NetworkTest nt = new NetworkTest();
-        JSONArray roomInfoObject = nt.jsonArrayNetwork(url);
-        if(roomInfoObject == null){
-            Log.d("ddu RoomActivity","no room");
-        }
-        sharePeopleList = new ArrayList<>();
-        try{
-            for(int i=0; i<roomInfoObject.length();i++){
-                CustomerInfo customerInfo = new CustomerInfo();
-                customerInfo.setInfo_id(roomInfoObject.getJSONObject(i).getString("share_info_id"));
-                customerInfo.setNickname(roomInfoObject.getJSONObject(i).getString("nickname"));
-                sharePeopleList.add(customerInfo);
+        new CommuServer(CommuServer.SELECT_PEOPLE_ROOMSHARE, new CommuServer.OnCommuListener() {
+            @Override
+            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                Log.d("ddu result!!",arr.toString());
+                JSONArray roomInfoObject = arr;
+                if(roomInfoObject == null){
+                    Log.d("ddu RoomActivity","no room");
+                }else{
+                    sharePeopleList = new ArrayList<>();
+                    try{
+                        for(int i=0; i<roomInfoObject.length();i++){
+                            CustomerInfo customerInfo = new CustomerInfo();
+                            customerInfo.setInfo_id(roomInfoObject.getJSONObject(i).getString("share_info_id"));
+                            customerInfo.setNickname(roomInfoObject.getJSONObject(i).getString("nickname"));
+                            sharePeopleList.add(customerInfo);
+                        }
+                        Log.d("ddu RoomActivity",sharePeopleList.toString());
+                        listener.onSuccess();
+                    }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
             }
-            listener.onSuccess();
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailed(Error error) {
+            }
+        }).addParam("room_no", room_no).start();
     }
 
     private RoomListener listener = new RoomListener() {
         @Override
         public void onSuccess() {
-//            Log.d("ddu results: ",room.toString());
             runOnUiThread(new Runnable(){
                 @Override
                 public void run() {
