@@ -15,8 +15,12 @@ import android.widget.Toast;
 import com.my.taxipool.R;
 import com.my.taxipool.activity.BlockActivity;
 import com.my.taxipool.network.NetworkBlockCancel;
+import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.vo.BlockCustomerInfo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -45,13 +49,11 @@ public class BlockListAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position){return position;}
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
-
-
+    public View getView(final int position, View convertView, ViewGroup parent){
         if(convertView==null){
             convertView=inflater.inflate(layout,parent,false);
         }
-        final BlockCustomerInfo listviewitem=data.get(position);
+        final BlockCustomerInfo listviewitem = data.get(position);
         Log.d("BlockListAdapter", listviewitem.getBlockNickname());
 
 
@@ -69,21 +71,21 @@ public class BlockListAdapter extends BaseAdapter {
         bt_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("BlockListAdapter",listviewitem.getBlockNickname()+"클릭됨");
-                //Toast.makeText(BlockActivity.this, "", Toast.LENGTH_SHORT).show();
-                NetworkBlockCancel nbc = new NetworkBlockCancel();
-                nbc.sendData(listviewitem.getInfo_id(), listviewitem.getBlockInfo_id());
-                ((BlockActivity) cont).refresh();
-                /*((BlockActivity) cont).runOnUiThread(new Runnable() {
-                    public void run() {
+                new CommuServer("http://192.168.12.30:8888/taxi_db_test2/blocklistcancel.do", new CommuServer.OnCommuListener() {
+                    @Override
+                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                        Log.d("ddu result!!",str.toString());
+                        data.remove(position);
                         notifyDataSetChanged();
                     }
-                });*/
-
+                    @Override
+                    public void onFailed(Error error) {
+                    }
+                }).addParam("info_id",listviewitem.getInfo_id())
+                  .addParam("block_info_id", listviewitem.getBlockInfo_id()).start();
             }
         });
         return convertView;
     }
-
 }
 
