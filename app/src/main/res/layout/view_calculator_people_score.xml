@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="horizontal" android:layout_width="match_parent"
+android:layout_height="55dp"
+android:gravity="center_vertical"
+android:background="@color/white">
+<ImageView
+    android:layout_width="55dp"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:src="@drawable/defaultprofile"
+    android:id="@+id/tv_calculator_profile"
+    />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:layout_marginLeft="10dp"
+    android:textSize="17sp"
+    android:layout_weight="1"
+    android:text="NickName"
+    android:id="@+id/tv_calculator_name"
+    />
+<RatingBar
+    android:id="@+id/ratingbar_score"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:numStars="5"
+    android:stepSize="1.0"
+    android:isIndicator="false"
+    style="?android:attr/ratingBarStyleSmall"/>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/darkGray"
+    android:gravity="center_horizontal"
+    android:layout_weight="1"
+    android:id="@+id/tv_calculator_block"
+    android:text="차단하기"
+    />
+</LinearLayout>
