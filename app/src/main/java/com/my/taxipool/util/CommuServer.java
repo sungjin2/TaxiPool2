@@ -29,6 +29,8 @@ public class CommuServer extends AsyncTask<String,Void,Message> {
     public static final String REGIST_ROOM = ROOT_URL+"registroom.do";
     public static final String SELECT_PEOPLE_ROOMSHARE = ROOT_URL+"roomsharepeople.do";
     public static final String SELECT_BOCKLIST = ROOT_URL+"blocklist.do";
+    public static final String DELETE_BLOCKLIST = ROOT_URL+"blocklistcancel.do";
+
     protected String url=ROOT_URL;
     protected String query = "";
 

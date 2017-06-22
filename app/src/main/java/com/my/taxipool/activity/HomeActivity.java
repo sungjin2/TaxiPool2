@@ -1,7 +1,6 @@
 package com.my.taxipool.activity;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -48,7 +47,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.my.taxipool.R;
-import com.my.taxipool.network.GetDistance;
 import com.my.taxipool.vo.TmpRoom;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -228,9 +226,9 @@ public class HomeActivity extends AppCompatActivity
                     Log.d("TAG", "In onTouch button");
                     new Thread() {
                         public void run() {
-                            GetDistance gd = new GetDistance();
-                            final JSONObject distances = gd.getDistance(tmpRoom.getStartLat(),tmpRoom.getStartLon(),tmpRoom.getEndLat(),tmpRoom.getEndLon());
-                            getdistanceJSON(distances);
+//                            GetDistance gd = new GetDistance();
+//                            final JSONObject distances = gd.getDistance(tmpRoom.getStartLat(),tmpRoom.getStartLon(),tmpRoom.getEndLat(),tmpRoom.getEndLon());
+                            //getdistanceJSON(distances);
                             Intent intent = new Intent(HomeActivity.this,RoomListActivity.class);
                             intent.putExtra("object",tmpRoom);
                             startActivity(intent);
@@ -250,21 +248,6 @@ public class HomeActivity extends AppCompatActivity
                     openAutocompleteActivity();
                     return true;
                 }else if (v == tv_time){
-//                    TimePickerDialog dialog = new TimePickerDialog(this,
-//                            AlertDialog.THEME_HOLO_LIGHT,
-//                            new TimePickerDialog.OnTimeSetListener() {
-//                                @Override
-//                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                                    // 설정버튼 눌렀을 때
-//                                    if(hourOfDay > 12){
-//                                        tv_time.setText((hourOfDay - 12) + ":" + minute + " 오후  부터");
-//                                    }else{
-//                                        tv_time.setText(hourOfDay + ":" + minute + " 오전  부터");
-//                                    }
-//                                    tmpRoom.setTime(hourOfDay+":"+minute);
-//                                }
-//                            },15,24,false);
-//                    dialog.show();
                 }
             }
         }catch (Exception e){
@@ -415,7 +398,6 @@ public class HomeActivity extends AppCompatActivity
             JSONObject jsonData = response.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0);
             String distance = jsonData.getJSONObject("distance").getString("text");
             String time = jsonData.getJSONObject("duration").getString("text");
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.RecyclerViewAdapter;
-import com.my.taxipool.network.NetworkRoomList;
+import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.vo.Room;
 import com.my.taxipool.vo.TmpRoom;
 
@@ -62,22 +62,15 @@ public class RoomListActivity extends AppCompatActivity {
         Log.d("ddu tmpRoom",tmpRoom.toString());
         setViewIds();
         setViews();
-        new Thread(){
-            public void run(){
-                //서버연결
-                String url = "http://192.168.12.30:8888/taxi_db_test2/roomlist.do" +
-                        "?start_x=" + tmpRoom.getStartLat() +
-                        "&start_y=" + tmpRoom.getStartLon()+
-                        "&end_x=" + tmpRoom.getEndLat() +
-                        "&end_y=" + tmpRoom.getEndLon() ;
+        new CommuServer(CommuServer.SELECT_ROOM_LIST, new CommuServer.OnCommuListener() {
+            @Override
+            public void onSuccess(JSONObject object,JSONArray arr, String str) {
+                Log.d("ddu result!!",arr.toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                // test
                 try{
-                    NetworkRoomList nt = new NetworkRoomList();
-                    JSONArray responseArray = nt.NetworkRoomList(url);
-                    Log.d("responseArray", responseArray.toString());
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    // test
-                    for(int i=0; i < responseArray.length();i++){
-                        JSONObject jsonobject = responseArray.getJSONObject(i);
+                    for(int i=0; i < arr.length();i++) {
+                        JSONObject jsonobject = arr.getJSONObject(i);
                         room_no = jsonobject.getInt("room_no");
                         admin_id = jsonobject.getString("admin_id");
                         payment = jsonobject.getString("payment");
@@ -94,24 +87,28 @@ public class RoomListActivity extends AppCompatActivity {
                         start_time = sdf.parse(start_time_string, new ParsePosition(0));
                         room_state = jsonobject.getString("room_state");
                         current_cnt = jsonobject.getInt("current_cnt");
-
                         Room r = new Room(room_no, admin_id, max_cnt, payment, room_gender, alcohol, start_spot,
                                 end_spot, start_x, start_y, end_x, end_y, start_time,
-                                room_state,current_cnt);
+                                room_state, current_cnt);
                         room_list.add(r);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                runOnUiThread(new Runnable(){
-                    @Override
-                    public void run(){
-                        loadRoomList();
-                    }
-                });
+                loadRoomList();
             }
-        }.start();
+            @Override
+            public void onFailed(Error error) {
+            }
+
+        }).addParam("start_x", 0.0)
+                .addParam("start_y", 0.0)
+                .addParam("end_x", 0.0)
+                .addParam("end_y", 0.0).start();
+//        }).addParam("start_x", tmpRoom.getStartLat())
+//                .addParam("start_y", tmpRoom.getStartLon())
+//                .addParam("end_x", tmpRoom.getEndLat())
+//                .addParam("end_y", tmpRoom.getEndLon()).start();
     }
 
     private void setViewIds(){

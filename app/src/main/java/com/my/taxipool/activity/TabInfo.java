@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.my.taxipool.R;
+import com.my.taxipool.adapter.RoomSharePeopleListAdapter;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
@@ -49,6 +51,11 @@ public class TabInfo extends Fragment{
     private TextView tv_info_endspot;
     private TextView tv_info_detail;
 
+    //People List
+    RoomSharePeopleListAdapter adapter;
+    ArrayList<CustomerInfo> data;
+    ListView listView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -58,13 +65,6 @@ public class TabInfo extends Fragment{
 //        mapFragment.getMapAsync(this);
 
         String myId = "135425414";
-//        room = new Room(0,"135425414",2,
-//                "p","0","y",
-//                "출발지", "도착지",
-//                "37.704596897257","126.3057867288",
-//                "37.494596897257","126.90557867288",
-//                new Date(), "a");
-
         status = Set.Load(getActivity(),"status",NO_MEMBER);
         Log.i("ddu",String.valueOf(status));
         if(room.getAdmin_id().equals(myId)){
@@ -72,6 +72,7 @@ public class TabInfo extends Fragment{
         }
         setViewIds();
         setViews();
+        setSharePeopleListAdapter();
 
         return rootView;
     }
@@ -80,6 +81,7 @@ public class TabInfo extends Fragment{
         tv_info_startspot = (TextView) rootView.findViewById(R.id.tv_info_startspot);
         tv_info_endspot = (TextView) rootView.findViewById(R.id.tv_info_endspot);
         tv_info_detail = (TextView) rootView.findViewById(R.id.tv_info_detail);
+        listView = (ListView) rootView.findViewById(R.id.listview_room_info);
     }
 
     private void setViews(){
@@ -139,6 +141,10 @@ public class TabInfo extends Fragment{
         }
     }
 
+    public void setSharePeopleListAdapter(){
+        adapter = new RoomSharePeopleListAdapter(getContext(), R.layout.view_room_people_info,sharePeopleList);
+        listView.setAdapter(adapter);
+    }
 
 //    public void showDialog(){
 //        final View innerView = getLayoutInflater().inflate(R.layout.dialog, null);

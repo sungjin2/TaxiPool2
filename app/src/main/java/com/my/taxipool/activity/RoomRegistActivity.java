@@ -30,17 +30,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.my.taxipool.R;
+import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.Room;
 import com.my.taxipool.vo.TmpRoom;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -169,55 +166,80 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                         time, "a");
 
                 final Intent intent = new Intent(RoomRegistActivity.this, RoomActivity.class);
-                new Thread() {
+
+                new CommuServer(CommuServer.REGIST_ROOM, new CommuServer.OnCommuListener() {
                     @Override
-                    public void run() {
-                        URL url;
-                        HttpURLConnection conn;
-
-                        try {
-                            url = new URL("http://192.168.12.30:8888/taxi_db_test2/registroom.do");
-                            conn = (HttpURLConnection)url.openConnection();
-                            conn.setRequestMethod("POST");
-                            conn.setDoInput(true);
-                            conn.setDoOutput(true);
-                            conn.setUseCaches(false);
-                            Log.i("SuccessActivity","conn1"+ conn.getRequestMethod());
-
-                            //QueryString을 추가하는 부분, UTF-8로 한글까지 Server에서 이상없이 받을 수 있음
-                            OutputStream os = conn.getOutputStream();
-                            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                            bw.write(room.toQuery());
-                            bw.flush();
-                            bw.close();
-                            final int responseCode = conn.getResponseCode();
-
-                            switch (responseCode){
-                                case HttpURLConnection.HTTP_OK:
-                                    //응답결과 수신
-                                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                                    String responseData = null;
-                                    while((responseData = br.readLine())!=null) {
-                                        Log.d("ddu 응답결과:", String.valueOf(responseCode));
-                                        room_no = responseData;
-                                    }
-                                    break;
-                                case HttpURLConnection.HTTP_NOT_FOUND:
-                                    Log.d("ddu network error:", "NOT FOUND");
-                                    break;
-                                default:
-                                    Log.d("ddu response code:", String.valueOf(responseCode));
-                                    break;
-                            }
+                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                        Log.d("ddu result!!",str);
+                        room_no = str;
                         Set.Save(RoomRegistActivity.this,"room_num",room_no);
                         Set.Save(RoomRegistActivity.this,"status",YES_MEMBER);
                         startActivity(intent);
                         finish();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
-                }.start();
+                    @Override
+                    public void onFailed(Error error) {
+                    }
+                }).addParam("admin_id", room.getAdmin_id())
+                        .addParam("max_cnt", room.getMax_cnt())
+                        .addParam("payment", room.getPayment())
+                        .addParam("room_gender", room.getRoom_gender())
+                        .addParam("alcohol", room.getAlcohol())
+                        .addParam("start_spot", room.getStart_spot())
+                        .addParam("end_spot", room.getEnd_spot())
+                        .addParam("start_x", room.getStart_x())
+                        .addParam("start_y", room.getStart_y())
+                        .addParam("end_x", room.getEnd_x())
+                        .addParam("end_y", room.getEnd_y()).start();
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+//                        URL url;
+//                        HttpURLConnection conn;
+//
+//                        try {
+//                            url = new URL("http://192.168.12.30:8888/taxi_db_test2/registroom.do");
+//                            conn = (HttpURLConnection)url.openConnection();
+//                            conn.setRequestMethod("POST");
+//                            conn.setDoInput(true);
+//                            conn.setDoOutput(true);
+//                            conn.setUseCaches(false);
+//                            Log.i("ddu Method",conn.getRequestMethod());
+//
+//                            //QueryString을 추가하는 부분, UTF-8로 한글까지 Server에서 이상없이 받을 수 있음
+//                            OutputStream os = conn.getOutputStream();
+//                            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+//                            bw.write(room.toQuery());
+//                            bw.flush();
+//                            bw.close();
+//                            final int responseCode = conn.getResponseCode();
+//
+//                            switch (responseCode){
+//                                case HttpURLConnection.HTTP_OK:
+//                                    //응답결과 수신
+//                                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                                    String responseData = null;
+//                                    while((responseData = br.readLine())!=null) {
+//                                        Log.d("ddu 응답결과:", String.valueOf(responseCode));
+//                                        room_no = responseData;
+//                                    }
+//                                    break;
+//                                case HttpURLConnection.HTTP_NOT_FOUND:
+//                                    Log.d("ddu network error:", "NOT FOUND");
+//                                    break;
+//                                default:
+//                                    Log.d("ddu response code:", String.valueOf(responseCode));
+//                                    break;
+//                            }
+//                        Set.Save(RoomRegistActivity.this,"room_num",room_no);
+//                        Set.Save(RoomRegistActivity.this,"status",YES_MEMBER);
+//                        startActivity(intent);
+//                        finish();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }.start();
 //                        startActivity(intent);
 
             }
