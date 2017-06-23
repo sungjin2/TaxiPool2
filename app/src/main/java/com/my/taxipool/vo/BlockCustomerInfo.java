@@ -11,19 +11,19 @@ public class BlockCustomerInfo {
     String info_id;
     String b_nickname;
     String b_info_id;
-    //String b_profile;
+    String b_profile;
     //임시로 drawble에 있는거 쓴다. 원래 url이니까 String으로 해야하나?
-    int b_profile = R.drawable.defaultprofile;
+    //int b_profile = R.drawable.defaultprofile;
 
 
     public String getInfo_id(){return info_id;}
     public String getBlockInfo_id(){return b_info_id;}
     public String getBlockNickname(){return b_nickname;}
-    public int getBlockProfile(){return b_profile;}
-    //public String getProfile(){return profile;}
+    //public int getBlockProfile(){return b_profile;}
+    public String getProfile(){return b_profile;}
 
 
-    public BlockCustomerInfo(String info_id, String b_nickname, String b_info_id, int b_profile){
+    public BlockCustomerInfo(String info_id, String b_info_id, String b_nickname,String b_profile){
         this.info_id = info_id;
         this.b_info_id = b_info_id;
         this.b_nickname = b_nickname;

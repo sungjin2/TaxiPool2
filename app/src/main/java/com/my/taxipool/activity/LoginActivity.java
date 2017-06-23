@@ -18,6 +18,7 @@ import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 import com.kakao.util.helper.log.Logger;
 import com.my.taxipool.R;
+import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 
 import java.io.BufferedReader;
@@ -29,17 +30,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity {
+
     SessionCallback callback;
 
+    //KaKao에서 받은 VALUES
+    String info_id;
+    String profile_pic;
 
+    //회원가입창에서 필요한 VALUES
     String s_name;
     String s_nickname;
     String s_phone;
     String s_gender;
 
+    //회원정보 입력 VO
     CustomerInfo info;
-
-    //Map<String, String> map = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,33 +69,21 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //회원가입 성공
         super.onActivityResult(requestCode, resultCode, data);
-        ////////////////////////////////////
-        Log.d("ddu",requestCode+"여액티비티리절트 돌아왔음!!!");
         if(requestCode == 5){
-//            if(resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "다녀옴", Toast.LENGTH_LONG).show();
-
-
-                /*map.put("name", data.getStringExtra("s_name"));
-                map.put("nickname", data.getStringExtra("s_nickname"));
-                map.put("phone", data.getStringExtra("s_phone"));*/
-
-
             s_name = data.getStringExtra("name");
             s_nickname = data.getStringExtra("nickname");
             s_phone = data.getStringExtra("phone");
             s_gender = data.getStringExtra("gender");
-
 
             //★테스트를 위해 잠시 가입을 막아둡니다!!, 바로test로가게바꿔놈!!
             //requestSignUp();
 
             //★원래는 onSuccess에 해야하지만 여기서 서버에 보내보겠습니다!!
             redirectTest();
-            //}
         }
-        ////////////////////////////////////
+
         //간편로그인시 호출, 없으면 간편로그인시 로그인 성공화면으로 넘어가지 않음
         else if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
             return;
@@ -118,6 +111,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         },null);
     }
+
+
+
     /**
      * 사용자의 상태를 알아 보기 위해 me API 호출을 한다.
      */
@@ -141,15 +137,17 @@ public class LoginActivity extends AppCompatActivity {
 //                redirectLoginActivity();
             }
 
+            //택시풀 회원가입 성공한 경우.
             @Override
             public void onSuccess(UserProfile userProfile) {
                 Logger.d("UserProfile : " + userProfile);
 
                 Log.d("requestMe>onSuccess","kakaoID:"+userProfile.getId()+
                         ","+"name"+s_name+","+"nickname"+s_nickname+","+"phoneNumber"+s_phone+","+"gender"+s_gender);
-
+                info_id = String.valueOf(userProfile.getId());
+                profile_pic = userProfile.getProfileImagePath();
+                Set.Save(getApplicationContext(), "info_id", info_id);
                 //사용자의 프로필사진이 없는 경우 기본이미지로 할 것!
-
                 redirectTest();
                 //redirectMainActivity();
             }
@@ -189,33 +187,24 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onNotSignedUp() {
                     //세션 오픈은 성공했으나 사용자 정보 요청 결과 사용자 가입이 안된 상태로 자동 가입 앱이 아닌 경우에만 호출된다!
-                    Log.d("ddu","onNotSignedUp");
-
+                    //회원가입창 (onActivityResult로 갑니다)
                     Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivityForResult(intent,5);
-
-
-                    //intent.putExtra("id","NULL");
-                    //intent.putExtra("profile","PATH");
-                    //intent.putExtra("id",userProfile.getId());
-//                  intent.putExtra("profile",userProfile.getProfileImagePath());
-                    //startActivity(intent);
-                    //finish();
-
-
+                    startActivityForResult(intent, 5);
                 }
-
+            //간편로그인 onSuccess
             @Override
             public void onSuccess(UserProfile userProfile) {
                 //앱 연결에 성공(?), 로그인에 성공(?)하면 로그인한 사용자의 고유일련번호, 닉네임, 이미지URL을 리턴
-
                 Log.e("UserProfile", userProfile.toString());
+
+                info_id = String.valueOf(userProfile.getId());
+                profile_pic = userProfile.getNickname();
+                Set.Save(getApplicationContext(), "info_id", info_id);
+
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                Log.d("ddu","onSuccess");//
+                Toast.makeText(getApplicationContext(), "간편로그인으로 접속하였습니다", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
                 finish();
             }
@@ -231,10 +220,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     protected void redirectTest() {
-
         //원래 kakaoID , Image는 onSuccess에서 UserProfile을 이용해 받습니다.
         //그래서 임시로 막아둔거에요.
-        info = new CustomerInfo("kakaoID",  "Image", s_phone, s_name, s_nickname, s_gender);
+        //info = new CustomerInfo("kakaoIDt",  "http://mud-kage.kakao.co.kr/14/dn/btqgJ3IPgaS/nNqXGMV8ZLq0sBmaK62PtK/o.jpg", s_phone, s_name, s_nickname, s_gender);
+        info = new CustomerInfo(info_id, profile_pic, s_phone, s_name, s_nickname, s_gender);
         Log.i("LoginA:Commit:",info.toString());
         Log.i("LoginA:Commit:info_name",info.getInfo_name());
 
@@ -246,11 +235,12 @@ public class LoginActivity extends AppCompatActivity {
                 HttpURLConnection conn;
 
                 try {
-                    String queryString = "info_id="+info.getInfo_id()+
-                            "&phone_no="+info.getPhone_no()+
+                    String queryString = "info_id="+info_id+
+                            "&phone_no="+profile_pic+
                             "&info_name="+info.getInfo_name()+
                             "&nickname="+info.getNickname()+
-                            "&info_gender="+info.getInfo_gender();
+                            "&info_gender="+info.getInfo_gender()+
+                            "&profile_pic="+info.getProfile_pic();
 
                     Log.i("SuccessActivity",info.getInfo_id());
 

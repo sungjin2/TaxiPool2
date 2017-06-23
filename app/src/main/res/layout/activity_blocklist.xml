@@ -3,8 +3,17 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <include layout="@layout/view_list_people_info"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGray"
+        android:padding="5dp"
+        android:gravity="center"
+        android:text="차단 목록"/>
 
     <ListView
         android:id="@+id/listview"
@@ -15,4 +24,6 @@
         android:choiceMode="singleChoice"/>
 
 
+
 </LinearLayout>
+
