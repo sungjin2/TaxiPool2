@@ -2,6 +2,8 @@ package com.my.taxipool.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,7 @@ import android.widget.Toast;
 
 import com.my.taxipool.R;
 import com.my.taxipool.activity.BlockActivity;
-import com.my.taxipool.network.NetworkBlockCancel;
+//import com.my.taxipool.network.NetworkBlockCancel;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.vo.BlockCustomerInfo;
 
@@ -23,6 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -34,6 +40,7 @@ public class BlockListAdapter extends BaseAdapter {
     private ArrayList<BlockCustomerInfo> data;
     private int layout;
     private Context cont;
+    private Bitmap bitmap;
 
 
     public BlockListAdapter(Context context, int layout, ArrayList<BlockCustomerInfo> data){
@@ -59,7 +66,32 @@ public class BlockListAdapter extends BaseAdapter {
 
         //profile set, 지금은 서버에서 프로필주소 안받아오므로 defalutimage로..
         ImageView profile = (ImageView)convertView.findViewById(R.id.block_profile);
-        //profile.setImageResource(R.drawable.defaultprofile);
+        convertView.findViewById(R.id.img_roomshare_profile);
+        Thread mThread = new Thread(){
+            @Override
+            public void run(){
+                try{
+                    URL url = new URL(listviewitem.getProfile());
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        mThread.start();
+        try{
+            mThread.join();/*
+            ImageHelper ih = new ImageHelper();
+            bitmap = ih.getRoundedCornerBitmap(bitmap,200);*/
+            profile.setImageBitmap(bitmap);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+
         //profile.setImageResource(listviewitem.getProfile());
         //icon.setImageResource(listviewitem.getProfile());
 
@@ -71,7 +103,7 @@ public class BlockListAdapter extends BaseAdapter {
         bt_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CommuServer("http://192.168.12.30:8888/taxi_db_test2/blocklistcancel.do", new CommuServer.OnCommuListener() {
+                new CommuServer(CommuServer.DELETE_BLOCKLIST, new CommuServer.OnCommuListener() {
                     @Override
                     public void onSuccess(JSONObject object, JSONArray arr, String str) {
                         Log.d("ddu result!!",str.toString());
