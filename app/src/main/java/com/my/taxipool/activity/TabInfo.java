@@ -144,27 +144,27 @@ public class TabInfo extends Fragment{
     public void setSharePeopleListAdapter(){
         adapter = new RoomSharePeopleListAdapter(getContext(), R.layout.view_room_people_info,sharePeopleList);
         listView.setAdapter(adapter);
+//        listViewHeightSet(adapter,listView);
     }
-
-//    public void showDialog(){
-//        final View innerView = getLayoutInflater().inflate(R.layout.dialog, null);
-//        Dialog mDialog = new Dialog(this);
-//        mDialog.setContentView(innerView);
-//
-//        tv_dialog_name = (TextView) findViewById(R.id.dialog_name);
-//        image_dialog = (ImageView) findViewById(R.id.dialog_image);
-//        WindowManager.LayoutParams params = mDialog.getWindow().getAttributes();
-//        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-//        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-//        mDialog.getWindow().setAttributes((WindowManager.LayoutParams) params);
-//        mDialog.getWindow().setGravity(Gravity.BOTTOM);
-//        mDialog.show();
-//    }
 
     //바꿀 것
     private String detailToString(int maxCnt,int currentCnt,Date startTime){
         return "(" + currentCnt + "/" + maxCnt + ")" + startTime.toString();
     }
+
+//    //listview scroll 막기
+//    private static void listViewHeightSet(RoomSharePeopleListAdapter listAdapter, ListView listView){
+//        int totalHeight = 0;
+//        for (int i = 0; i < listAdapter.getCount(); i++){
+//            View listItem = listAdapter.getView(i, null, listView);
+//            listItem.measure(0, 0);
+//            totalHeight += listItem.getMeasuredHeight();
+//        }
+//
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+//        listView.setLayoutParams(params);
+//    }
 
     @Override
     public void onResume(){

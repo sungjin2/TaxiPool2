@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -47,13 +49,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.my.taxipool.R;
+import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.util.ImageHelper;
+import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.TmpRoom;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,21 +71,30 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnCameraIdleListener, OnMapReadyCallback,View.OnTouchListener
         ,GoogleApiClient.OnConnectionFailedListener {
 
+    public static CustomerInfo myInfo;
+    TmpRoom tmpRoom= new TmpRoom();
+
+    //Big views
     private SlidingUpPanelLayout mLayout;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private Toolbar toolbar;
 
-    //For Input View
+    //For Input Views
     private TextView tv_from;    private TextView tv_to;    private TextView tv_time;
     private Button btn;    private Spinner spinner_people;
     private RadioButton radio_bill; private RadioButton radio_point; private RadioButton radio_all;
 
-    // Marker
+    //For Hamburger Views
+    private ImageView img_nav_info;
+    private TextView tv_nav_infoname;
+    private TextView tv_nav_info_nickandphone;
+    private Bitmap bitmap;
+
+    // Marker and Map
     private TextView tv_spotname;       //Marker's textview
     private LinearLayout view_point;    //Marker
     private LinearLayout layout_spot;   //한칸 (출발지)
-
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
 
@@ -84,8 +102,6 @@ public class HomeActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-
-    TmpRoom tmpRoom= new TmpRoom();
 
     long time;
 
@@ -112,6 +128,36 @@ public class HomeActivity extends AppCompatActivity
         setViewIds();
         initBottomDrawer();
         setViews();
+
+        int info_id = 135425414;
+        new CommuServer(CommuServer.SELECT_BY_INFOID, new CommuServer.OnCommuListener() {
+            @Override
+            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                if(str!= null){
+                    if(str.equals("0")){
+                        Log.d("ddu login","0");
+                    }
+                }else{
+                    try{
+                        myInfo = new CustomerInfo();
+                        myInfo.setInfo_id(object.getString("info_id"));
+                        myInfo.setProfile_pic(object.getString("profile_pic"));
+                        myInfo.setPhone_no(object.getString("phone_no"));
+                        myInfo.setInfo_name(object.getString("info_name"));
+                        myInfo.setNickname(object.getString("nickname"));
+                        myInfo.setInfo_gender(object.getString("info_gender"));
+                        myInfo.setResultscore(object.getInt("score")/(double)object.getInt("cnt"));
+                        Log.d("ddu HomeActivity myInfo",myInfo.toString());
+                        setMyinfo();
+                    }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailed(Error error) {
+            }
+        }).addParam("info_id", info_id).start();
     }
 
     private void setViewIds(){
@@ -132,6 +178,12 @@ public class HomeActivity extends AppCompatActivity
         radio_bill= (RadioButton) findViewById(R.id.radio_bill);
         radio_point= (RadioButton) findViewById(R.id.radio_point);
         radio_all= (RadioButton) findViewById(R.id.radio_all);
+
+        //Views in Hamburger
+        View headerLayout = navigationView.getHeaderView(0);
+        img_nav_info = (ImageView) headerLayout.findViewById(R.id.img_nav_info);
+        tv_nav_infoname = (TextView) headerLayout.findViewById(R.id.tv_nav_infoname);
+        tv_nav_info_nickandphone = (TextView) headerLayout.findViewById(R.id.tv_nav_info_nickandphone);
 
         //Marker
         view_point = (LinearLayout) findViewById(R.id.view_point);
@@ -179,8 +231,37 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
 
-
+    private void setMyinfo() {
+        //setHamburger Views start
+        Thread mThread = new Thread(){
+            @Override
+            public void run(){
+                try{
+                    URL url = new URL(myInfo.getProfile_pic());
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        mThread.start();
+        try{
+            mThread.join();
+            ImageHelper ih = new ImageHelper();
+            bitmap = ih.getRoundedCornerBitmap(bitmap,200);
+            img_nav_info.setImageBitmap(bitmap);
+            tv_nav_infoname.setText(myInfo.getNickname());
+            tv_nav_info_nickandphone.setText(myInfo.getInfo_name()+" / "+myInfo.getPhone_no());
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        //setHamburger Views end
     }
 
     private void initBottomDrawer() {
@@ -257,7 +338,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
-
     //햄버거 네비게이션 선택
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -390,7 +470,6 @@ public class HomeActivity extends AppCompatActivity
     private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
                                               CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
         return Html.fromHtml(res.getString(R.string.place_details, name, address));
-
     }
 
     public void getdistanceJSON(JSONObject response){
