@@ -44,7 +44,7 @@ public class RoomActivity extends AppCompatActivity{
     static final int WAIT_TOGO = 20;
     static final int FINISH = 50;
     int status;
-    String room_num;
+    static public String room_num;
 
     //items
     private Room room;
@@ -137,8 +137,11 @@ public class RoomActivity extends AppCompatActivity{
                     try{
                         for(int i=0; i<roomInfoObject.length();i++){
                             CustomerInfo customerInfo = new CustomerInfo();
+                            customerInfo.setResultscore(roomInfoObject.getJSONObject(i).getInt("score")/(double)roomInfoObject.getJSONObject(i).getInt("cnt"));
+                            customerInfo.setState(roomInfoObject.getJSONObject(i).getString("state"));
                             customerInfo.setInfo_id(roomInfoObject.getJSONObject(i).getString("share_info_id"));
                             customerInfo.setNickname(roomInfoObject.getJSONObject(i).getString("nickname"));
+                            customerInfo.setProfile_pic(roomInfoObject.getJSONObject(i).getString("profile_pic"));
                             sharePeopleList.add(customerInfo);
                         }
                         Log.d("ddu RoomActivity",sharePeopleList.toString());
