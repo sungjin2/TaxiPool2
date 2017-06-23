@@ -33,10 +33,10 @@
         android:gravity="center"
         android:text="합승자 보기"/>
     <include layout="@layout/view_line"/>
-    <ListView
-        android:id="@+id/listview_room_info"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-    </ListView>
-    <!-- end people info -->
+
+ <ListView
+     android:id="@+id/listview_room_info"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"/>
+ <!-- end people info -->
 </LinearLayout>
