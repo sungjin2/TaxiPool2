@@ -4,13 +4,30 @@ package com.my.taxipool.vo;
  * Created by Hyeon on 2017-06-02.
  */
 public class CustomerInfo {
-
     String info_id;
-    String image;
+    String profile_pic;
     String phone_no;
     String info_name;
     String nickname;
     String info_gender;
+    double resultscore;
+    String state;
+
+    public double getResultscore() {
+        return resultscore;
+    }
+
+    public void setResultscore(double resultscore) {
+        this.resultscore = resultscore;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public CustomerInfo(){
     }
@@ -22,9 +39,9 @@ public class CustomerInfo {
         this.info_gender = info_gender;
     }
 
-    public CustomerInfo(String info_id, String image, String phone_no, String info_name, String nickname, String info_gender) {
+    public CustomerInfo(String info_id, String profile_pic, String phone_no, String info_name, String nickname, String info_gender) {
         this.info_id = info_id;
-        this.image = image;
+        this.profile_pic = profile_pic;
         this.phone_no = phone_no;
         this.info_name = info_name;
         this.nickname = nickname;
@@ -35,7 +52,7 @@ public class CustomerInfo {
     public String toString() {
         return "CustomerInfo{" +
                 "info_id='" + info_id + '\'' +
-                ", image='" + image + '\'' +
+                ", profile_pic='" + profile_pic + '\'' +
                 ", phone_no='" + phone_no + '\'' +
                 ", info_name='" + info_name + '\'' +
                 ", nickname='" + nickname + '\'' +
@@ -51,10 +68,10 @@ public class CustomerInfo {
         this.info_id = info_id;
     }
 
-    public String getImage(){return image;}
+    public String getProfile_pic(){return profile_pic;}
 
-    public void setImage(String image){
-        this.image = image;
+    public void setProfile_pic(String profile_pic){
+        this.profile_pic = profile_pic;
     }
 
     public String getPhone_no() {
