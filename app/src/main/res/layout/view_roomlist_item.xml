@@ -5,7 +5,7 @@
     android:background="@color/white"
     android:padding="5dp"
     android:layout_height="wrap_content"
-    android:id="@+id/b_item">
+    android:id="@+id/root_roomlist_item">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,22 +44,22 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:layout_gravity="right"
+                android:src="@mipmap/ic_launcher"
+                android:id="@+id/img_roomlist_alcohol"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:gravity="right"
                 android:src="@mipmap/ic_launcher"
-                android:id="@+id/payment"
+                android:id="@+id/img_roomlist_payment"
                 />
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="right"
                 android:src="@mipmap/ic_launcher"
-                android:id="@+id/gender"/>
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="right"
-                android:src="@mipmap/ic_launcher"
-                android:id="@+id/alcohol"/>
+                android:id="@+id/img_roomlist_gender"/>
         </LinearLayout>
     </LinearLayout>
 

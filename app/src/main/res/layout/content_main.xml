@@ -42,10 +42,11 @@
                 android:orientation="vertical"
                 android:padding="10dp">
                 <TextView
+                    android:id="@+id/tv_home_indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPink"
-                    android:text="이 위치로 설정 >"
+                    android:text="이 위치로 출발지 설정 >"
                     />
                 <TextView
                     android:id="@+id/tv_spotname"
@@ -63,6 +64,15 @@
                 android:layout_gravity="center"/>
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btn_place_auto"
+            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:background="#d5ffffff"
+            android:text="장소 검색으로 설정"
+            android:layout_gravity="bottom"
+            />
         <fragment
             android:id="@+id/map_sliding"
             class="com.google.android.gms.maps.SupportMapFragment"

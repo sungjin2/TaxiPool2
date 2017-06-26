@@ -54,14 +54,21 @@
         android:orientation="horizontal"
         android:gravity="left|center_vertical">
         <ImageView
-            android:id="@+id/tv_room_img1"
+            android:id="@+id/img_room_alcohol"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_margin="5dp"
             android:src="@mipmap/ic_launcher"
             android:textColor="@color/colorPink" />
         <ImageView
-            android:id="@+id/tv_room_img2"
+            android:id="@+id/img_room_gender"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="5dp"
+            android:src="@mipmap/ic_launcher"
+            android:textColor="@color/colorPink" />
+        <ImageView
+            android:id="@+id/img_room_payment"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_margin="5dp"

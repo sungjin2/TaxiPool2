@@ -2,142 +2,114 @@ package com.my.taxipool.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.my.taxipool.R;
-import com.my.taxipool.vo.SimpleBoardData;
+import com.my.taxipool.vo.Room;
 
-import java.text.Collator;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 /**
- * Created by Hyeon on 2016-11-02.
+ * Created by KITRI on 2017-06-07.
  */
 
-public class RoomListRecyclerAdapter extends RecyclerView.Adapter<RoomListRecyclerAdapter.ViewHolder> {
+public class RoomListRecyclerAdapter extends RecyclerView.Adapter<RoomListRecyclerAdapter.ViewHolder>{
 
-    private ArrayList<SimpleBoardData> list;
+    private ArrayList<Room> rooms;
     private Context context;
-    private RecyclerViewAdapterInterface.OnItemClickListener listener = new RecyclerViewAdapterInterface.OnItemClickListener() {
-        @Override
-        public void onItemClick(View view, int position) {
-        }
-    };
-    public RoomListRecyclerAdapter(ArrayList<SimpleBoardData> list, Context context, RecyclerViewAdapterInterface.OnItemClickListener listener){
-        this.list = list;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    public RoomListRecyclerAdapter(ArrayList<Room> rooms, Context context, RoomListRecyclerAdapterInterface.OnItemClickListener listener){
+        this.rooms = rooms;
         this.context = context;
         this.listener=listener;
     }
 
     @Override
     public int getItemCount() {
-        //returns the number of elements the RecyclerView will display
-        return list.size();
+        return rooms.size();
     }
 
+    //레이아웃을 만들어 holder에 저장
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //Inflate the layout, initialize the View Holder
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.customeview_roomlist, parent, false);
-        ViewHolder holder = new ViewHolder(v);
-        return holder;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_roomlist_item, parent, false);
+        return new ViewHolder(view);
     }
 
+    final static class ViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout root = null;
+        public TextView start_spot, end_spot, start_time, cnt, current_cnt;
+        public ImageView img_roomlist_alcohol,img_roomlist_payment,img_roomlist_gender;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            root = (LinearLayout)itemView.findViewById(R.id.root_roomlist_item);
+            start_spot = (TextView) itemView.findViewById(R.id.start_spot);
+            end_spot = (TextView) itemView.findViewById(R.id.end_spot);
+            start_time = (TextView) itemView.findViewById(R.id.start_time);
+            cnt = (TextView) itemView.findViewById(R.id.cnt);
+            current_cnt= (TextView) itemView.findViewById(R.id.current_cnt);
+
+            img_roomlist_alcohol= (ImageView) itemView.findViewById(R.id.img_roomlist_alcohol);
+            img_roomlist_payment= (ImageView) itemView.findViewById(R.id.img_roomlist_payment);
+            img_roomlist_gender= (ImageView) itemView.findViewById(R.id.img_roomlist_gender);
+
+        }
+    }
+
+    private RoomListRecyclerAdapterInterface.OnItemClickListener listener = new RoomListRecyclerAdapterInterface.OnItemClickListener() {
+        @Override
+        public void onItemClick(View view, int position) {
+        }
+    };
+
+    //넘겨받은 데이터를 화면에 출력하는 역할
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final SimpleBoardData data = list.get(position);
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        //holder.start_spot.setText(labels.get(position));
 
         holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemClick(v, position);
-                Toast.makeText(context, "Recycle Click" + position, Toast.LENGTH_SHORT).show();
+            listener.onItemClick(v, position);
             }
         });
 
-        //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        holder.titleView.setText(data.getTitle());
-        Log.d("info->", data.getTitle());
-        ////////////////holder.levelView.setImageResource(R.drawable.background_tab);
-        String info = String.format("%1$s | %2$s | 조회 %3$s",data.getmName(),data.getDateSimple(),String.valueOf(data.getReadCnt()));
-        holder.infoView.setText(info);
-        Log.d("info->", data.getDate() + "|" + data.getmName());
-        holder.replyCntView.setText(String.valueOf(data.getReplyCnt()));
-        //animate(holder);
+        //출발지
+        holder.start_spot.setText(rooms.get(position).getStart_spot());
+        holder.end_spot.setText(rooms.get(position).getEnd_spot());
+        holder.cnt.setText(String.valueOf(rooms.get(position).getMax_cnt()));
+        holder.current_cnt.setText(String.valueOf(rooms.get(position).getCurrent_cnt()));
+
+//        //남녀방 구분
+//        if(rooms.get(position).getRoom_gender().equals("f")){
+//            holder.img_roomlist_gender.setImageResource(R.drawable.ic_female_24dp);
+//        }else{
+//            holder.img_roomlist_gender.setImageResource(R.drawable.ic_male_24dp);
+//        }
+//        //결제방법
+//        if(rooms.get(position).getPayment().equals("p")){
+//            holder.img_roomlist_payment.setImageResource(R.drawable.ic_point_24dp);
+//        }else{ //cash인경우
+//            holder.img_roomlist_payment.setImageResource(R.drawable.ic_cash_24dp);
+//        }
+//        //음주여부
+//        if(rooms.get(position).equals("y")){
+//            holder.img_roomlist_alcohol.setImageResource(R.drawable.ic_local_drink_24dp);
+//        }else{
+//            holder.img_roomlist_alcohol.setImageResource(R.drawable.ic_none_24dp);
+//        }
+        holder.img_roomlist_gender.setImageResource(rooms.get(position).getImgsource_gender());
+        holder.img_roomlist_payment.setImageResource(rooms.get(position).getImgsource_payment());
+        holder.img_roomlist_alcohol.setImageResource(rooms.get(position).getImgsource_alcohol());
+
     }
 
-
-
-//    @Override
-//    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-//        super.onAttachedToRecyclerView(recyclerView);
-//    }
-
-    // Insert a new item to the RecyclerView on a predefined position
-    public void add(int position, SimpleBoardData data) {
-        list.add(position, data);
-        notifyItemInserted(position);
-    }
-
-    // Remove a RecyclerView item containing a specified Data object
-    public void remove(SimpleBoardData data) {
-        int position = list.indexOf(data);
-        list.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public SimpleBoardData getItem(final int position){
-        return list.get(position);
-    }
-
-    public static final class ViewHolder extends RecyclerView.ViewHolder{
-        LinearLayout root=null;
-        TextView titleView=null;
-        TextView infoView=null;
-        TextView replyCntView=null;
-        ImageView levelView=null;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            root=(LinearLayout)itemView.findViewById(R.id.boardview);
-            titleView=(TextView)itemView.findViewById(R.id.title);
-            infoView=(TextView)itemView.findViewById(R.id.info);
-            replyCntView=(TextView)itemView.findViewById(R.id.repcount);
-            levelView=(ImageView)itemView.findViewById(R.id.levelimage);
-        }
-    }
-
-
-    public static final Comparator<SimpleBoardData> ALPHA_COMPARATOR = new Comparator<SimpleBoardData>() {
-        private final Collator sCollator = Collator.getInstance();
-        @Override
-        public int compare(SimpleBoardData object1, SimpleBoardData object2) {
-            long obj1 = object1.getDateLong();
-            long obj2 = object2.getDateLong();
-            if (obj1 > obj2) {
-                return -1;
-            } else if (obj1 < obj2) {
-                return 1;
-            } else
-                return 0;
-        }
-    };      //얘는 어디다 쓰는거에여? 정렬?
-
-}
-
-class RecyclerViewAdapterInterface {
-    public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
-    }
-    public interface OnItemLongClickListener{
-        public boolean onItemLongClick(View view, int position);
-    }
 }

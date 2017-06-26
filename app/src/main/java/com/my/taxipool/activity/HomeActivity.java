@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -47,10 +46,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.my.taxipool.R;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.ImageHelper;
+import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.TmpRoom;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -63,6 +66,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,6 +77,7 @@ public class HomeActivity extends AppCompatActivity
 
     public static CustomerInfo myInfo;
     TmpRoom tmpRoom= new TmpRoom();
+    int info_id;
 
     //Big views
     private SlidingUpPanelLayout mLayout;
@@ -85,6 +90,8 @@ public class HomeActivity extends AppCompatActivity
     private Button btn;    private Spinner spinner_people;
     private RadioButton radio_bill; private RadioButton radio_point; private RadioButton radio_all;
 
+    Button btn_place_auto;
+
     //For Hamburger Views
     private ImageView img_nav_info;
     private TextView tv_nav_infoname;
@@ -92,23 +99,34 @@ public class HomeActivity extends AppCompatActivity
     private Bitmap bitmap;
 
     // Marker and Map
+    MarkerOptions markeropt_start;
+    MarkerOptions markeropt_end;
+    HashMap<String,MarkerOptions> hashMapMarker = new HashMap<>();
+
+    ImageView img_marker;
+    TextView tv_home_indicator;
+
     private TextView tv_spotname;       //Marker's textview
     private LinearLayout view_point;    //Marker
-    private LinearLayout layout_spot;   //한칸 (출발지)
+    private LinearLayout layout_spot_from;   //한칸 (출발지)
+    private LinearLayout layout_spot_to;   //한칸 (출발지)
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
 
     //Autocomplete
     private GoogleApiClient mGoogleApiClient;
-    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
-    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int PLACE_AUTOCOMPLETE_TO = 0;
+    private static final int PLACE_AUTOCOMPLETE_FROM = 1;
 
     long time;
+    boolean fromto_flag = false;    //false가 from차례 true= to
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        info_id = getIntent().getIntExtra("info_id",-1);
 
         /* Google map start */
         FragmentManager manager = getSupportFragmentManager();
@@ -129,7 +147,6 @@ public class HomeActivity extends AppCompatActivity
         initBottomDrawer();
         setViews();
 
-        int info_id = 135425414;
         new CommuServer(CommuServer.SELECT_BY_INFOID, new CommuServer.OnCommuListener() {
             @Override
             public void onSuccess(JSONObject object, JSONArray arr, String str) {
@@ -164,12 +181,13 @@ public class HomeActivity extends AppCompatActivity
         //Sliding Layout
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         //toolbar & drawer & navi
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_home);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         //input리스트
-        layout_spot = (LinearLayout) findViewById(R.id.layout_spot);
+        layout_spot_from = (LinearLayout) findViewById(R.id.layout_spot_from);
+        layout_spot_to = (LinearLayout) findViewById(R.id.layout_spot_to);
         view_point = (LinearLayout) findViewById(R.id.view_point);
         tv_from = (TextView) findViewById(R.id.tv_from);
         tv_to = (TextView) findViewById(R.id.tv_to);
@@ -187,19 +205,31 @@ public class HomeActivity extends AppCompatActivity
 
         //Marker
         view_point = (LinearLayout) findViewById(R.id.view_point);
+        img_marker = (ImageView) findViewById(R.id.ic_place);
         tv_spotname = (TextView) findViewById(R.id.tv_spotname);
         btn = (Button) findViewById(R.id.button_exam);
+        tv_home_indicator  = (TextView) findViewById(R.id.tv_home_indicator);
+
+        btn_place_auto = (Button) findViewById(R.id.btn_place_auto);
     }
 
     private void setViews() {
+
+        mLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // ignore all touch events
+                return true;
+            }
+        });
+
         view_point.post(new Runnable() {
             @Override
             public void run() {
                 int height = view_point.getHeight();
-                ImageView image = (ImageView) findViewById(R.id.ic_place);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(image.getLayoutParams());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(img_marker.getLayoutParams());
                 lp.setMargins(0, 0, 0, height);
-                image.setLayoutParams(lp);
+                img_marker.setLayoutParams(lp);
             }
         }); //spot 가운데로 margin 설정
 
@@ -214,9 +244,8 @@ public class HomeActivity extends AppCompatActivity
         //setOnTouchListener
         btn.setOnTouchListener(this);
         tv_spotname.setOnTouchListener(this);
-        tv_to.setOnTouchListener(this);
-        tv_from.setOnTouchListener(this);
-        tv_time.setOnTouchListener(this);
+        layout_spot_from.setOnTouchListener(this);
+        layout_spot_to.setOnTouchListener(this);
 
         radio_bill.setOnClickListener(optionOnClickListener);
         radio_point.setOnClickListener(optionOnClickListener);
@@ -262,6 +291,17 @@ public class HomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         //setHamburger Views end
+
+        btn_place_auto.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(fromto_flag){
+                    openAutocompleteActivity("to");
+                }else{
+                    openAutocompleteActivity("from");
+                }
+            }
+        });
     }
 
     private void initBottomDrawer() {
@@ -273,10 +313,10 @@ public class HomeActivity extends AppCompatActivity
 //        });
         mLayout.setTouchEnabled(false);
 
-        layout_spot.post(new Runnable() {
+        layout_spot_from.post(new Runnable() {
             @Override
             public void run() {
-                int height = layout_spot.getHeight() * 2; //height is ready
+                int height = layout_spot_from.getHeight() * 2; //height is ready
                 mLayout.setPanelHeight(height);
             }
         }); //panel height 설정
@@ -311,6 +351,7 @@ public class HomeActivity extends AppCompatActivity
 //                            final JSONObject distances = gd.getDistance(tmpRoom.getStartLat(),tmpRoom.getStartLon(),tmpRoom.getEndLat(),tmpRoom.getEndLon());
                             //getdistanceJSON(distances);
                             Intent intent = new Intent(HomeActivity.this,RoomListActivity.class);
+                            intent.putExtra("info_id",info_id);
                             intent.putExtra("object",tmpRoom);
                             startActivity(intent);
                         }
@@ -318,16 +359,89 @@ public class HomeActivity extends AppCompatActivity
                     return true;
 
                 } else if (v == tv_spotname) {
-                    tmpRoom.setStartSpot(tv_spotname.getText().toString());
-                    tv_from.setText(tv_spotname.getText().toString());
-                    return true;
+                    LatLng latLng = googleMap.getCameraPosition().target;
+                    if(!fromto_flag){   //출발지 설정
+                        fromto_flag = true;
+                        view_point.setVisibility(View.INVISIBLE);
+                        tv_from.setText(tv_spotname.getText().toString());
+                        tv_from.setTextColor(getResources().getColor(R.color.darkGray));
 
-                } else if (v == tv_from) {
-                    return true;
+                        tmpRoom.setStartSpot(tv_spotname.getText().toString());
+                        tmpRoom.setStartLat(latLng.latitude);
+                        tmpRoom.setStartLon(latLng.longitude);
 
-                } else if (v == tv_to) {
-                    openAutocompleteActivity();
+                        markeropt_start
+                                .position(latLng)
+                                .snippet(tv_spotname.getText().toString());
+                        hashMapMarker.put("start",markeropt_start);
+
+                    }else {
+                        fromto_flag = false;
+                        view_point.setVisibility(View.INVISIBLE);
+                        tv_to.setText(tv_spotname.getText().toString());
+                        tv_to.setTextColor(getResources().getColor(R.color.darkGray));
+
+                        tmpRoom.setEndSpot(tv_spotname.getText().toString());
+                        tmpRoom.setEndLat(latLng.latitude);
+                        tmpRoom.setEndLon(latLng.longitude);
+
+                        markeropt_end
+                                .position(latLng)
+                                .snippet(tv_spotname.getText().toString());
+                        hashMapMarker.put("end",markeropt_end);
+                    }
+                    googleMap.clear();
+
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    boolean flag_start = false;
+                    boolean flag_end = false;
+                    if(hashMapMarker.containsKey("start")){
+                        googleMap.addMarker(hashMapMarker.get("start"));
+                        builder.include(hashMapMarker.get("start").getPosition());
+                        flag_start = true;
+                    }
+                    if(hashMapMarker.containsKey("end")) {
+                        googleMap.addMarker(hashMapMarker.get("end"));
+                        builder.include(hashMapMarker.get("end").getPosition());
+                        flag_end = true;
+                    }
+                    if( flag_start && flag_end ){
+                        LatLngBounds bounds = builder.build();
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+                    }
+
                     return true;
+                } else if (v == layout_spot_from) {
+//                    openAutocompleteActivity("from");
+                    view_point.setVisibility(View.VISIBLE);
+                    tv_home_indicator.setText("이 위치로 출발지 설정");
+                    fromto_flag = false;
+
+                    tv_from.setText("핀을 클릭해 출발지를 지정해주세요");
+                    tv_from.setTextColor(getResources().getColor(R.color.colorPink));
+
+                    hashMapMarker.remove("start");
+                    googleMap.clear();
+                    if(hashMapMarker.containsKey("start"))
+                        googleMap.addMarker(hashMapMarker.get("start"));
+                    if(hashMapMarker.containsKey("end"))
+                        googleMap.addMarker(hashMapMarker.get("end"));
+                    return false;
+                } else if (v == layout_spot_to) {
+//                    openAutocompleteActivity("to");
+                    view_point.setVisibility(View.VISIBLE);
+                    tv_home_indicator.setText("이 위치로 도착지 설정");
+                    tv_to.setText("핀을 클릭해 도착지를 지정해주세요");
+                    tv_to.setTextColor(getResources().getColor(R.color.colorPink));
+                    fromto_flag = true;
+
+                    hashMapMarker.remove("end");
+                    googleMap.clear();
+                    if(hashMapMarker.containsKey("start"))
+                        googleMap.addMarker(hashMapMarker.get("start"));
+                    if(hashMapMarker.containsKey("end"))
+                        googleMap.addMarker(hashMapMarker.get("end"));
+                    return false;
                 }else if (v == tv_time){
                 }
             }
@@ -351,6 +465,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.nav_sub_blocklist:
                 Intent intent = new Intent(HomeActivity.this, BlockActivity.class);
+                intent.putExtra("info_id",info_id);
                 startActivity(intent);
                 break;
         }
@@ -363,9 +478,6 @@ public class HomeActivity extends AppCompatActivity
     public void onCameraIdle() {
         LatLng latLng = googleMap.getCameraPosition().target;
         String title = getmarkerAddress(latLng);
-        tmpRoom.setStartLat(latLng.latitude);
-        tmpRoom.setStartLon(latLng.longitude);
-        tmpRoom.setStartSpot(title);
         tv_spotname.setText(title);
     }
 
@@ -376,6 +488,19 @@ public class HomeActivity extends AppCompatActivity
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(init));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         googleMap.setOnCameraIdleListener(this);
+
+        ImageResourceUtil util = new ImageResourceUtil();
+        Bitmap bitmap_icon = util.getBitmap(HomeActivity.this,R.drawable.ic_place_yellow_24dp);
+        bitmap_icon = resizeMapIcons(bitmap_icon,150,150);
+
+        markeropt_start = new MarkerOptions();
+        markeropt_end = new MarkerOptions();
+        markeropt_start.title("출발지")
+                .snippet(tmpRoom.getStartSpot())
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
+        markeropt_end.title("도착지")
+                .snippet(tmpRoom.getEndSpot())
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
 
         /* for current location */
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -398,16 +523,14 @@ public class HomeActivity extends AppCompatActivity
                     1);
         } catch (IOException ioException) {
             //네트워크 문제
-            Toast.makeText(this, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
-            return "지오코더 서비스 사용불가";
+            return "네트워크를 확인해주세요";
         } catch (IllegalArgumentException illegalArgumentException) {
             Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
-            return "잘못된 GPS 좌표";
+            return "GPS 좌표가 잘못되었습니다";
         }
 
         if (addresses == null || addresses.size() == 0) {
-            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
-            return "주소 미발견";
+            return "주소를 발견하지 못했습니다";
         } else {
             Address address = addresses.get(0);
             return address.getAddressLine(0).toString();
@@ -417,21 +540,48 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }else if (mLayout != null &&
                 (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
             mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+            boolean flag_start = false;
+            boolean flag_end = false;
+            if(hashMapMarker.containsKey("start")){
+                googleMap.addMarker(hashMapMarker.get("start"));
+                builder.include(hashMapMarker.get("start").getPosition());
+                flag_start = true;
+            }
+            if(hashMapMarker.containsKey("end")) {
+                googleMap.addMarker(hashMapMarker.get("end"));
+                builder.include(hashMapMarker.get("end").getPosition());
+                flag_end = true;
+            }
+            if( flag_start && flag_end ){
+                LatLngBounds bounds = builder.build();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+            }
+
+        }else if (mLayout != null &&
+                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)) {
+            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }else{
             super.onBackPressed();
         }
     }
 
-    private void openAutocompleteActivity() {
+    private void openAutocompleteActivity(String flag_from_to) {
         try {
             Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                .build(this);
+            if(flag_from_to.equals("from")){
+                startActivityForResult(intent, PLACE_AUTOCOMPLETE_FROM);
+            }else if(flag_from_to.equals("to")){
+                startActivityForResult(intent, PLACE_AUTOCOMPLETE_TO);
+            }
         } catch (GooglePlayServicesRepairableException e) {
             GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
                     0 /* requestCode */).show();
@@ -445,21 +595,29 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Place place = PlaceAutocomplete.getPlace(this, data);
+            if(requestCode == PLACE_AUTOCOMPLETE_FROM){   //출발지 설정
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                tv_to.setText(place.getId());
-                tv_to.setText(formatPlaceDetails(getResources(), place.getName(),
-                        place.getId(), place.getAddress(), place.getPhoneNumber(),
-                        place.getWebsiteUri()));
-                tmpRoom.setEndLat(place.getLatLng().latitude);
-                tmpRoom.setEndLon(place.getLatLng().longitude);
-                tmpRoom.setEndSpot(place.getAddress().toString());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-            } else if (resultCode == RESULT_CANCELED) {
+                tv_home_indicator.setText("이 위치로 출발지 설정");
+                tv_home_indicator.setTextColor(getResources().getColor(R.color.colorPink));
+                img_marker.setImageResource(R.drawable.ic_place_yellow_24dp);
+                tv_spotname.setText(formatPlaceDetails(getResources(), place.getName(), place.getAddress()));
+                fromto_flag = false;
+            }else if (requestCode == PLACE_AUTOCOMPLETE_TO) {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+                tv_home_indicator.setText("이 위치로 도착지 설정");
+                tv_home_indicator.setTextColor(getResources().getColor(R.color.colorDart));
+                tv_spotname.setText(formatPlaceDetails(getResources(), place.getName(), place.getAddress()));
+                fromto_flag = true;
             }
+        }else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+            Status status = PlaceAutocomplete.getStatus(this, data);
+        } else if (resultCode == RESULT_CANCELED) {
         }
     }
 
@@ -467,8 +625,7 @@ public class HomeActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
 
-    private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
+    private static Spanned formatPlaceDetails(Resources res, CharSequence name,CharSequence address) {
         return Html.fromHtml(res.getString(R.string.place_details, name, address));
     }
 
@@ -480,5 +637,10 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public Bitmap resizeMapIcons(Bitmap imageBitmap,int width, int height){
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
     }
 }

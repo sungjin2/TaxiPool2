@@ -18,11 +18,12 @@
             android:gravity="center"/>-->
 
     <LinearLayout
-        android:id="@+id/layout_spot"
+        android:id="@+id/layout_spot_from"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="#ffffffff"
+        android:background="@drawable/selector_item_white"
+        android:clickable="true"
         android:orientation="horizontal">
 
         <TextView
@@ -33,48 +34,49 @@
             android:text="출발지"
             android:textColor="@color/black"
             android:textSize="13sp" />
-
         <TextView
             android:id="@+id/tv_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:clickable="true"
-            android:text="contents"
-            android:textColor="@color/darkGray"
-            android:textSize="17sp" />
+            android:text="핀을 클릭해 출발지를 지정해주세요"
+            android:textColor="@color/colorPink"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_spot_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:clickable="true"
+        android:background="@drawable/selector_item_white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:text="도착지"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="핀을 클릭해 도착지를 지정해주세요"
+            android:textColor="@color/colorPink"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#ffffffff"
-            android:layout_marginTop="1dp">
-            <TextView
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:text="도착지"
-                android:textColor="@color/black"
-                android:textSize="13sp" />
-            <TextView
-                android:id="@+id/tv_to"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/darkGray"
-                android:layout_margin="15dp"
-                android:textSize="17sp"
-                android:clickable="true"
-                android:text="contents"/>
-        </LinearLayout>
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#ffffffff"
+        android:background="@drawable/selector_item_white"
             android:layout_marginTop="1dp">
             <TextView
                 android:layout_width="60dp"
@@ -88,11 +90,11 @@
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/darkGray"
+                android:textColor="@color/colorPink"
                 android:layout_margin="15dp"
-                android:textSize="17sp"
+                android:textSize="14sp"
                 android:clickable="true"
-                android:text="00:00 time"/>
+                android:text="클릭해 시간을 선택해 주세요"/>
         </LinearLayout>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -163,7 +165,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text="방 새로 만들기"
+                android:text="방 검색하기"
                 android:textColor="@color/white" />
         </RelativeLayout>
 </LinearLayout>
