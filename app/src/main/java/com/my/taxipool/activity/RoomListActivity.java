@@ -11,7 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.my.taxipool.R;
-import com.my.taxipool.adapter.RecyclerViewAdapter;
+import com.my.taxipool.adapter.RoomListRecyclerAdapter;
+import com.my.taxipool.adapter.RoomListRecyclerAdapterInterface;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.vo.Room;
 import com.my.taxipool.vo.TmpRoom;
@@ -26,10 +27,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class RoomListActivity extends AppCompatActivity {
-    private RecyclerView addressRView;
+public class RoomListActivity extends AppCompatActivity implements RoomListRecyclerAdapterInterface.OnItemClickListener {
+    private RecyclerView recyclerView_roomlist;
+    private RoomListRecyclerAdapter adapter;
     private ArrayList<Room> room_list = new ArrayList<Room>();
-    private static RecyclerViewAdapter addressAdapter;
+//    private static RoomListRecyclerAdapter addressAdapter;
 
     private int room_no;
     private String admin_id;
@@ -47,6 +49,7 @@ public class RoomListActivity extends AppCompatActivity {
     private String room_state;
     private int current_cnt;
     TmpRoom tmpRoom ;
+    int info_id;
 
     private TextView tv_myStartTime;
     private TextView tv_myStartSpot;
@@ -58,6 +61,7 @@ public class RoomListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roomlist);
 
+        info_id = getIntent().getIntExtra("info_id",-1);
         tmpRoom = (TmpRoom) getIntent().getSerializableExtra("object");
         Log.d("ddu tmpRoom",tmpRoom.toString());
         setViewIds();
@@ -95,24 +99,19 @@ public class RoomListActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                loadRoomList();
+                setAdapter(RoomListActivity.this);
             }
             @Override
             public void onFailed(Error error) {
             }
-
-        }).addParam("start_x", 0.0)
-                .addParam("start_y", 0.0)
-                .addParam("end_x", 0.0)
-                .addParam("end_y", 0.0).start();
-//        }).addParam("start_x", tmpRoom.getStartLat())
-//                .addParam("start_y", tmpRoom.getStartLon())
-//                .addParam("end_x", tmpRoom.getEndLat())
-//                .addParam("end_y", tmpRoom.getEndLon()).start();
+        }).addParam("start_x", tmpRoom.getStartLon())
+                .addParam("start_y", tmpRoom.getStartLat())
+                .addParam("end_x", tmpRoom.getEndLon())
+                .addParam("end_y", tmpRoom.getEndLat()).start();
     }
-
     private void setViewIds(){
-        addressRView = (RecyclerView) findViewById(R.id.addressRView);
+        recyclerView_roomlist = (RecyclerView) findViewById(R.id.recyclerView_roomlist);
+        recyclerView_roomlist.setLayoutManager(new LinearLayoutManager(this));
         tv_myEndSpot = (TextView) findViewById(R.id.my_end_spot);
         tv_myStartSpot = (TextView) findViewById(R.id.my_start_spot);
         tv_myStartTime = (TextView) findViewById(R.id.my_start_time);
@@ -131,11 +130,17 @@ public class RoomListActivity extends AppCompatActivity {
             }
         });
     }
-    private void loadRoomList() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        addressRView.setAdapter(addressAdapter);
-        addressRView.setHasFixedSize(true);
-        addressRView.setLayoutManager(linearLayoutManager);
-        addressAdapter = new RecyclerViewAdapter(room_list);
+    public void setAdapter(final RoomListRecyclerAdapterInterface.OnItemClickListener listener){
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        adapter = new RoomListRecyclerAdapter(room_list,getApplicationContext(),listener);
+        recyclerView_roomlist.setAdapter(adapter);
+    }
+    @Override
+    public void onItemClick(View view, int position) {
+            Intent intent = new Intent(RoomListActivity.this, RoomActivity.class);
+            intent.putExtra("info_id",info_id);
+            intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
+//            intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
+            startActivity(intent);
     }
 }

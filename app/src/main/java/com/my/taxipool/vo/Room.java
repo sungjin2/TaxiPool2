@@ -1,12 +1,14 @@
 package com.my.taxipool.vo;
 
+import com.my.taxipool.R;
+
 import java.util.Date;
 
 /**
  * Created by KITRI on 2017-06-13.
  */
 
-public class Room {
+public class Room  {
     /*
      - 방번호
      - 출발지/도착지
@@ -29,10 +31,16 @@ public class Room {
     private String end_y;
     private Date start_time;
     private String room_state;
-    private int current_cnt; //해당 방에 신청/수락된 사람
+    private int current_cnt; // (해당 방에 신청 / 수락된 사람)
 
-    private double distance_one;
-    private double distance_two;
+    public static final int NO_MEMBER = 0;
+    public static final int REQUIRING = 10;
+    public static final int WAIT_TOGO = 20;
+    public static final int FINISH = 50;
+
+    private int imgsource_alcohol;
+    private int imgsource_gender;
+    private int imgsource_payment;
 
     public Room(){	}
 
@@ -76,27 +84,6 @@ public class Room {
         this.current_cnt = current_cnt;
     }
 
-    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol,
-                String start_spot, String end_spot, String start_x, String start_y, String end_x, String end_y,
-                Date start_time, String room_state, double distance_one, double distance_two) {
-        super();
-        this.room_no = room_no;
-        this.admin_id = admin_id;
-        this.max_cnt = max_cnt;
-        this.payment = payment;
-        this.room_gender = room_gender;
-        this.alcohol = alcohol;
-        this.start_spot = start_spot;
-        this.end_spot = end_spot;
-        this.start_x = start_x;
-        this.start_y = start_y;
-        this.end_x = end_x;
-        this.end_y = end_y;
-        this.start_time = start_time;
-        this.room_state = room_state;
-        this.distance_one = distance_one;
-        this.distance_two = distance_two;
-    }
 
     @Override
     public String toString() {
@@ -112,22 +99,6 @@ public class Room {
                 + "&room_gender=" + room_gender+ "&alcohol=" + alcohol+ "&start_spot=" + start_spot+ "&end_spot="
                 + end_spot+ "&start_x=" + start_x+ "&start_y=" + start_y + "&end_x=" + end_x+ "&end_y=" + end_y;
 //                +"&start_time=" + start_time;
-    }
-
-    public double getDistance_one() {
-        return distance_one;
-    }
-
-    public void setDistance_one(double distance_one) {
-        this.distance_one = distance_one;
-    }
-
-    public double getDistance_two() {
-        return distance_two;
-    }
-
-    public void setDistance_two(double distance_two) {
-        this.distance_two = distance_two;
     }
 
     public int getRoom_no() {
@@ -249,4 +220,33 @@ public class Room {
     public void setCurrent_cnt(int current_cnt) {
         this.current_cnt = current_cnt;
     }
+
+    public int getImgsource_alcohol() {
+        if(alcohol.equals("y")){
+            imgsource_alcohol = R.drawable.ic_local_drink_24dp;
+        }else{
+            imgsource_alcohol = R.drawable.ic_none_24dp;
+        }
+        return imgsource_alcohol;
+    }
+
+    public int getImgsource_gender() {
+        if(room_gender.equals("f")){
+            imgsource_gender = R.drawable.ic_female_24dp;
+        }else{
+            imgsource_gender = R.drawable.ic_male_24dp;
+        }
+        return imgsource_gender;
+    }
+
+    public int getImgsource_payment() {
+        if(payment.equals("p")){
+            imgsource_payment = R.drawable.ic_point_24dp;
+        }else{
+            imgsource_payment = R.drawable.ic_cash_24dp;
+        }
+        return imgsource_payment;
+    }
 }
+
+

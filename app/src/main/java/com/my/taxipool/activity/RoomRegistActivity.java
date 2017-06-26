@@ -5,10 +5,14 @@ package com.my.taxipool.activity;
  * by Hyeon on 2017-06-19.
  */
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -27,10 +31,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.my.taxipool.R;
 import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.Room;
 import com.my.taxipool.vo.TmpRoom;
@@ -63,7 +71,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     private String can_alcohol="y";    private String gender="0";
     private String room_no;
     private Date time;
-    static final int YES_MEMBER = 20;
     TmpRoom tmpRoom;
     Room room;
 
@@ -165,82 +172,54 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                         String.valueOf(tmpRoom.getEndLat()),String.valueOf(tmpRoom.getEndLon()),
                         time, "a");
 
-                final Intent intent = new Intent(RoomRegistActivity.this, RoomActivity.class);
+                //AlertDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(RoomRegistActivity.this);
+                builder.setTitle("이제부터 방장이 됩니다.");
+                builder.setMessage("입력한 정보대로 합승방을 만들거에요");
 
-                new CommuServer(CommuServer.REGIST_ROOM, new CommuServer.OnCommuListener() {
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
-                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
-                        Log.d("ddu result!!",str);
-                        room_no = str;
-                        Set.Save(RoomRegistActivity.this,"room_num",room_no);
-                        Set.Save(RoomRegistActivity.this,"status",YES_MEMBER);
-                        startActivity(intent);
-                        finish();
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                new CommuServer(CommuServer.REGIST_ROOM, new CommuServer.OnCommuListener() {
+                                    @Override
+                                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                                        Log.d("ddu result!!",str);
+                                        room_no = str;
+                                        Intent intent = new Intent(RoomRegistActivity.this, RoomActivity.class);
+                                        Set.Save(RoomRegistActivity.this,"room_no",room_no);
+                                        intent.putExtra("state",Room.WAIT_TOGO);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                    @Override
+                                    public void onFailed(Error error) {
+                                    }
+                                }).addParam("admin_id", room.getAdmin_id())
+                                        .addParam("max_cnt", room.getMax_cnt())
+                                        .addParam("payment", room.getPayment())
+                                        .addParam("room_gender", room.getRoom_gender())
+                                        .addParam("alcohol", room.getAlcohol())
+                                        .addParam("start_spot", room.getStart_spot())
+                                        .addParam("end_spot", room.getEnd_spot())
+                                        .addParam("start_x", room.getStart_x())
+                                        .addParam("start_y", room.getStart_y())
+                                        .addParam("end_x", room.getEnd_x())
+                                        .addParam("end_y", room.getEnd_y()).start();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.cancel();
+                                break;
+                        }
                     }
-                    @Override
-                    public void onFailed(Error error) {
-                    }
-                }).addParam("admin_id", room.getAdmin_id())
-                        .addParam("max_cnt", room.getMax_cnt())
-                        .addParam("payment", room.getPayment())
-                        .addParam("room_gender", room.getRoom_gender())
-                        .addParam("alcohol", room.getAlcohol())
-                        .addParam("start_spot", room.getStart_spot())
-                        .addParam("end_spot", room.getEnd_spot())
-                        .addParam("start_x", room.getStart_x())
-                        .addParam("start_y", room.getStart_y())
-                        .addParam("end_x", room.getEnd_x())
-                        .addParam("end_y", room.getEnd_y()).start();
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        URL url;
-//                        HttpURLConnection conn;
-//
-//                        try {
-//                            url = new URL("http://192.168.12.30:8888/taxi_db_test2/registroom.do");
-//                            conn = (HttpURLConnection)url.openConnection();
-//                            conn.setRequestMethod("POST");
-//                            conn.setDoInput(true);
-//                            conn.setDoOutput(true);
-//                            conn.setUseCaches(false);
-//                            Log.i("ddu Method",conn.getRequestMethod());
-//
-//                            //QueryString을 추가하는 부분, UTF-8로 한글까지 Server에서 이상없이 받을 수 있음
-//                            OutputStream os = conn.getOutputStream();
-//                            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-//                            bw.write(room.toQuery());
-//                            bw.flush();
-//                            bw.close();
-//                            final int responseCode = conn.getResponseCode();
-//
-//                            switch (responseCode){
-//                                case HttpURLConnection.HTTP_OK:
-//                                    //응답결과 수신
-//                                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                                    String responseData = null;
-//                                    while((responseData = br.readLine())!=null) {
-//                                        Log.d("ddu 응답결과:", String.valueOf(responseCode));
-//                                        room_no = responseData;
-//                                    }
-//                                    break;
-//                                case HttpURLConnection.HTTP_NOT_FOUND:
-//                                    Log.d("ddu network error:", "NOT FOUND");
-//                                    break;
-//                                default:
-//                                    Log.d("ddu response code:", String.valueOf(responseCode));
-//                                    break;
-//                            }
-//                        Set.Save(RoomRegistActivity.this,"room_num",room_no);
-//                        Set.Save(RoomRegistActivity.this,"status",YES_MEMBER);
-//                        startActivity(intent);
-//                        finish();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }.start();
-//                        startActivity(intent);
+                };
+
+                builder.setPositiveButton("네", dialogClickListener);
+                builder.setNegativeButton("잠깐만요",dialogClickListener);
+                AlertDialog dialog = builder.create();
+                dialog.show();
 
             }
         });
@@ -304,25 +283,44 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void onMapReady(final GoogleMap googleMap) {
-        //googlemapTmp = googleMap;
         startMarkerOption = new MarkerOptions();
         endMarkerOption = new MarkerOptions();
         LatLng start_latlon = new LatLng(tmpRoom.getStartLat(), tmpRoom.getStartLon());
         LatLng end_latlon = new LatLng(tmpRoom.getEndLat(), tmpRoom.getEndLon());
-        LatLng cneter_latlon = new LatLng((tmpRoom.getStartLat() + tmpRoom.getEndLat()) / 2,
-                                                 (tmpRoom.getStartLon() + tmpRoom.getEndLon()) / 2);
 
-        startMarkerOption.position(start_latlon);
-        startMarkerOption.title("출발지");
-        startMarkerOption.snippet(tmpRoom.getStartSpot());
-        endMarkerOption.position(end_latlon);
-        endMarkerOption.title("도착지");
-        endMarkerOption.snippet(tmpRoom.getEndSpot());
+        ImageResourceUtil util = new ImageResourceUtil();
+        Bitmap bitmap_icon = util.getBitmap(RoomRegistActivity.this,R.drawable.ic_place_yellow_24dp);
+        bitmap_icon = resizeMapIcons(bitmap_icon,130,130);
+
+        startMarkerOption.position(start_latlon)
+            .title("출발지")
+            .snippet(tmpRoom.getStartSpot())
+            .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
+        endMarkerOption.position(end_latlon)
+            .title("도착지")
+            .snippet(tmpRoom.getEndSpot())
+            .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
 
         googleMap.addMarker(startMarkerOption);
         googleMap.addMarker(endMarkerOption);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(cneter_latlon));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+        googleMap.addPolyline(new PolylineOptions()
+                .add(start_latlon, end_latlon)
+                .width(4)
+                .color(getResources().getColor(R.color.colorDart)));
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(start_latlon);
+        builder.include(end_latlon);
+        LatLngBounds bounds = builder.build();
+
+//        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+    }
+
+    public Bitmap resizeMapIcons(Bitmap imageBitmap,int width, int height){
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
     }
 }

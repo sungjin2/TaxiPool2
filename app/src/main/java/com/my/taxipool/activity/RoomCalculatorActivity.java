@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.Calculator_ListViewAdapter;
-import com.my.taxipool.network.NetworkTest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,9 +99,9 @@ public class RoomCalculatorActivity extends Activity{
                 }catch (Exception e) {
                 }*/
                 Log.d("ddu","들어옴");
-                NetworkTest nt = new NetworkTest();
+//                NetworkTest nt = new NetworkTest();
                 //result = null;
-                result = nt.jsonArrayNetwork(url, queryString);
+//                result = nt.jsonArrayNetwork(url, queryString);
                 Log.d("ddu","넷 끝나고 result:"+result);
                 Log.d("ddu","들어옴"+result.toString());
                 try{

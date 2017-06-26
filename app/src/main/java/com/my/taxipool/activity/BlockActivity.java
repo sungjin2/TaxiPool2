@@ -8,10 +8,7 @@ import android.widget.ListView;
 
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.BlockListAdapter;
-//import com.my.taxipool.adapter.RecyclerViewAdapterInterface;
-//import com.my.taxipool.network.Network;
 import com.my.taxipool.util.CommuServer;
-import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.BlockCustomerInfo;
 
 import org.json.JSONArray;
@@ -27,6 +24,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+//import com.my.taxipool.adapter.RecyclerViewAdapterInterface;
+//import com.my.taxipool.network.Network;
+
 /**
  * Created by sungjin on 2017-06-20.
  */
@@ -41,7 +41,8 @@ public class BlockActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String info_id = Set.Load(getApplicationContext(), "info_id", "0");
+        final int int_info_id = getIntent().getIntExtra("info_id",-1);
+        final String info_id = String.valueOf(int_info_id);
         Log.d("BlockActivity", "info_id"+info_id);
         //Activity
         setContentView(R.layout.activity_blocklist);

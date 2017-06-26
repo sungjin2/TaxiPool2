@@ -8,8 +8,8 @@
     <string name="follow"><![CDATA[Bharat Patel<br/>]]></string>
     <string name="place_details">
     <![CDATA[
-        <b>%1$s</b>
-        %2$s
+        <b>%1$s</b><br>
+         <p style="font-size:10px; font-color:lightgray">%2$s</p>
     ]]>
     </string>
     <string-array name="spinner_item">

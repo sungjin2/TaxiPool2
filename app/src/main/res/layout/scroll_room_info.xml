@@ -20,7 +20,7 @@
         android:gravity="center"
         android:text="합승경로 정보보기"/>
     <include layout="@layout/view_line"/>
-    <include layout="@layout/view_room_distance_info"/>
+    <include layout="@layout/view_room_info_distance"/>
     <!-- end room info -->
 
     <!-- people info -->
@@ -34,9 +34,11 @@
         android:text="합승자 보기"/>
     <include layout="@layout/view_line"/>
 
- <ListView
-     android:id="@+id/listview_room_info"
+ <android.support.v7.widget.RecyclerView
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/recyclerview_room_info"
      android:layout_width="match_parent"
-     android:layout_height="wrap_content"/>
+     android:layout_height="wrap_content"
+     android:nestedScrollingEnabled="false"/>
  <!-- end people info -->
 </LinearLayout>
