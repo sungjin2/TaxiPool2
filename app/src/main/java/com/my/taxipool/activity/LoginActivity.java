@@ -88,7 +88,6 @@ public class LoginActivity extends AppCompatActivity {
         else if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
-
     }
 
     private void requestSignUp() {

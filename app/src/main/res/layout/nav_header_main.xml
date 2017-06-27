@@ -31,5 +31,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="users@mail.com" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/bt_point"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/buttoncolorless"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
+            android:text="+Point"
+            android:textColor="@color/colorPoint"/>
+
+        <TextView
+            android:id="@+id/tv_point"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30,000원"
+            android:textColor="@color/white"/>
+    </LinearLayout>
 
 </LinearLayout>
