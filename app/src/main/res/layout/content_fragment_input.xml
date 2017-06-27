@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="200dp"
+    android:orientation="vertical">
+
+<!--    <Button
+        android:id="@+id/btn_place_auto2"
+        android:layout_height="40dp"
+        android:layout_width="match_parent"
+        android:layout_margin="10dp"
+        android:background="#d5ffffff"
+        android:text="장소 검색으로 설정"
+        android:visibility="gone"
+        android:gravity="bottom"
+        />-->
+
+    <LinearLayout
+        android:id="@+id/layout_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="#ffffff"
+        android:visibility="visible"
+        android:orientation="vertical">
+
+        <com.my.taxipool.view.InputCustomView
+            android:id="@+id/view_spot_from"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:leftLabel="출발지"
+            app:rightLabel="핀을 클릭해 출발지를 지정해주세요"
+            app:rightColor="@color/colorPink"
+            />
+        <com.my.taxipool.view.InputCustomView
+            android:id="@+id/view_spot_to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:leftLabel="도착지"
+            app:rightLabel="핀을 클릭해 도착지를 지정해주세요"
+            app:rightColor="@color/colorPink"
+            />
+        <com.my.taxipool.view.InputCustomView
+            android:id="@+id/view_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:leftLabel="출발시간"
+            app:rightLabel="출발시간을 지정해주세요"
+            app:rightColor="@color/colorPink" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#ffffffff"
+            android:layout_marginTop="1dp">
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:text="탑승 인원"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:entries="@array/spinner_item"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#ffffffff"
+            android:layout_marginTop="1dp">
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:text="결제 방법"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="15dp"
+                >
+                <RadioButton
+                    android:id="@+id/radio_bill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="현금   "/>
+                <RadioButton
+                    android:id="@+id/radio_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="포인트   "/>
+                <RadioButton
+                    android:id="@+id/radio_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="무관"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btn_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/selector_drawable_click"
+                android:text="방 검색하기"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</LinearLayout>

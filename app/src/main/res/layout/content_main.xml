@@ -7,11 +7,11 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoDragView="@+id/dragView"
-    sothree:umanoPanelHeight="68dp"
+    sothree:umanoPanelHeight="0dp"
     sothree:umanoShadowHeight="0dp"
     sothree:umanoParallaxOffset="100dp"
     sothree:umanoOverlay="true"
-    sothree:umanoInitialState="expanded"
+    sothree:umanoInitialState="collapsed"
     >
     <!--sothree:umanoScrollableView="@+id/list">-->
     <!-- MAIN CONTENT -->

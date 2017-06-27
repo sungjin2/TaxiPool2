@@ -72,6 +72,11 @@ public class InputCustomView extends LinearLayout{
         return rightLabel;
     }
 
+//    public void setColor(int color) {
+//        if (null != rightTextView) {
+//            rightTextView.setTextColor(getResources().getColor(color));
+//        }
+//    }
     public void setRightLabel(String rightLabel) {
         this.rightLabel = rightLabel;
         if (null != rightTextView) {

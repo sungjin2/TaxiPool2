@@ -2,6 +2,8 @@ package com.my.taxipool.vo;
 
 import com.my.taxipool.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -25,13 +27,14 @@ public class Room  {
     private String alcohol;
     private String start_spot;
     private String end_spot;
-    private String start_x;
-    private String start_y;
-    private String end_x;
-    private String end_y;
+    private String start_lon;
+    private String start_lat;
+    private String end_lon;
+    private String end_lat;
     private Date start_time;
     private String room_state;
     private int current_cnt; // (해당 방에 신청 / 수락된 사람)
+    private String str_start_time;
 
     public static final int NO_MEMBER = 0;
     public static final int REQUIRING = 10;
@@ -41,65 +44,6 @@ public class Room  {
     private int imgsource_alcohol;
     private int imgsource_gender;
     private int imgsource_payment;
-
-    public Room(){	}
-
-    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot,
-                String end_spot, String start_x, String start_y, String end_x, String end_y, Date start_time,
-                String room_state) {
-        super();
-        this.room_no = room_no;
-        this.admin_id = admin_id;
-        this.max_cnt = max_cnt;
-        this.payment = payment;
-        this.room_gender = room_gender;
-        this.alcohol = alcohol;
-        this.start_spot = start_spot;
-        this.end_spot = end_spot;
-        this.start_x = start_x;
-        this.start_y = start_y;
-        this.end_x = end_x;
-        this.end_y = end_y;
-        this.start_time = start_time;
-        this.room_state = room_state;
-    }
-
-    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol,
-                String start_spot, String end_spot, String start_x, String start_y, String end_x, String end_y,
-                Date start_time, String room_state, int current_cnt) {
-        this.room_no = room_no;
-        this.admin_id = admin_id;
-        this.max_cnt = max_cnt;
-        this.payment = payment;
-        this.room_gender = room_gender;
-        this.alcohol = alcohol;
-        this.start_spot = start_spot;
-        this.end_spot = end_spot;
-        this.start_x = start_x;
-        this.start_y = start_y;
-        this.end_x = end_x;
-        this.end_y = end_y;
-        this.start_time = start_time;
-        this.room_state = room_state;
-        this.current_cnt = current_cnt;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Room [room_no=" + room_no + ", admin_id=" + admin_id + ", max_cnt=" + max_cnt + ", payment=" + payment
-                + ", room_gender=" + room_gender + ", alcohol=" + alcohol + ", start_spot=" + start_spot + ", end_spot="
-                + end_spot + ", start_x=" + start_x + ", start_y=" + start_y + ", end_x=" + end_x + ", end_y=" + end_y
-                + ", start_time=" + start_time + ", room_state=" + room_state + "]";
-    }
-    public String toQuery(){
-        String start_spot = this.start_spot.replaceAll(" ", "%20");
-        String end_spot = this.end_spot.replaceAll(" ", "%20");
-        return "admin_id=" + admin_id + "&max_cnt=" + max_cnt + "&payment=" +payment
-                + "&room_gender=" + room_gender+ "&alcohol=" + alcohol+ "&start_spot=" + start_spot+ "&end_spot="
-                + end_spot+ "&start_x=" + start_x+ "&start_y=" + start_y + "&end_x=" + end_x+ "&end_y=" + end_y;
-//                +"&start_time=" + start_time;
-    }
 
     public int getRoom_no() {
         return room_no;
@@ -165,36 +109,36 @@ public class Room  {
         this.end_spot = end_spot;
     }
 
-    public String getStart_x() {
-        return start_x;
+    public String getStart_lon() {
+        return start_lon;
     }
 
-    public void setStart_x(String start_x) {
-        this.start_x = start_x;
+    public void setStart_lon(String start_lon) {
+        this.start_lon = start_lon;
     }
 
-    public String getStart_y() {
-        return start_y;
+    public String getStart_lat() {
+        return start_lat;
     }
 
-    public void setStart_y(String start_y) {
-        this.start_y = start_y;
+    public void setStart_lat(String start_lat) {
+        this.start_lat = start_lat;
     }
 
-    public String getEnd_x() {
-        return end_x;
+    public String getEnd_lon() {
+        return end_lon;
     }
 
-    public void setEnd_x(String end_x) {
-        this.end_x = end_x;
+    public void setEnd_lon(String end_lon) {
+        this.end_lon = end_lon;
     }
 
-    public String getEnd_y() {
-        return end_y;
+    public String getEnd_lat() {
+        return end_lat;
     }
 
-    public void setEnd_y(String end_y) {
-        this.end_y = end_y;
+    public void setEnd_lat(String end_lat) {
+        this.end_lat = end_lat;
     }
 
     public Date getStart_time() {
@@ -218,6 +162,43 @@ public class Room  {
     }
 
     public void setCurrent_cnt(int current_cnt) {
+        this.current_cnt = current_cnt;
+    }
+
+    public Room(){	}
+
+    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, String start_lon, String start_lat, String end_lon, String end_lat, Date start_time, String room_state) {
+        this.room_no = room_no;
+        this.admin_id = admin_id;
+        this.max_cnt = max_cnt;
+        this.payment = payment;
+        this.room_gender = room_gender;
+        this.alcohol = alcohol;
+        this.start_spot = start_spot;
+        this.end_spot = end_spot;
+        this.start_lon = start_lon;
+        this.start_lat = start_lat;
+        this.end_lon = end_lon;
+        this.end_lat = end_lat;
+        this.start_time = start_time;
+        this.room_state = room_state;
+    }
+
+    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, String start_lon, String start_lat, String end_lon, String end_lat, Date start_time, String room_state, int current_cnt) {
+        this.room_no = room_no;
+        this.admin_id = admin_id;
+        this.max_cnt = max_cnt;
+        this.payment = payment;
+        this.room_gender = room_gender;
+        this.alcohol = alcohol;
+        this.start_spot = start_spot;
+        this.end_spot = end_spot;
+        this.start_lon = start_lon;
+        this.start_lat = start_lat;
+        this.end_lon = end_lon;
+        this.end_lat = end_lat;
+        this.start_time = start_time;
+        this.room_state = room_state;
         this.current_cnt = current_cnt;
     }
 
@@ -246,6 +227,21 @@ public class Room  {
             imgsource_payment = R.drawable.ic_cash_24dp;
         }
         return imgsource_payment;
+    }
+
+    public void setStart_time(String start_time) {
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try{
+            this.start_time = transFormat.parse(start_time);
+        }catch(ParseException e){
+            e.printStackTrace();
+        }
+    }
+    public String getStr_Start_time() {
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        str_start_time = transFormat.format(start_time);
+
+        return str_start_time;
     }
 }
 

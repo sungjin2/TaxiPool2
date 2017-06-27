@@ -41,15 +41,14 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     private String alcohol;
     private String start_spot;
     private String end_spot;
-    private String start_x;
-    private String start_y;
-    private String end_x;
-    private String end_y;
+    private String start_lon;
+    private String start_lat;
+    private String end_lon;
+    private String end_lat;
     private Date start_time;
     private String room_state;
     private int current_cnt;
     TmpRoom tmpRoom ;
-    int info_id;
 
     private TextView tv_myStartTime;
     private TextView tv_myStartSpot;
@@ -61,7 +60,6 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roomlist);
 
-        info_id = getIntent().getIntExtra("info_id",-1);
         tmpRoom = (TmpRoom) getIntent().getSerializableExtra("object");
         Log.d("ddu tmpRoom",tmpRoom.toString());
         setViewIds();
@@ -83,16 +81,16 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
                         alcohol = jsonobject.getString("alcohol");
                         start_spot = jsonobject.getString("start_spot");
                         end_spot = jsonobject.getString("end_spot");
-                        start_x = jsonobject.getString("start_x");
-                        start_y = jsonobject.getString("start_y");
-                        end_x = jsonobject.getString("end_x");
-                        end_y = jsonobject.getString("end_y");
+                        start_lon = jsonobject.getString("start_lon");
+                        start_lat = jsonobject.getString("start_lat");
+                        end_lon = jsonobject.getString("end_lon");
+                        end_lat = jsonobject.getString("end_lat");
                         String start_time_string = jsonobject.getString("start_time");
                         start_time = sdf.parse(start_time_string, new ParsePosition(0));
                         room_state = jsonobject.getString("room_state");
                         current_cnt = jsonobject.getInt("current_cnt");
                         Room r = new Room(room_no, admin_id, max_cnt, payment, room_gender, alcohol, start_spot,
-                                end_spot, start_x, start_y, end_x, end_y, start_time,
+                                end_spot, start_lon, start_lat, end_lon, end_lat, start_time,
                                 room_state, current_cnt);
                         room_list.add(r);
                     }
@@ -104,10 +102,14 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
             @Override
             public void onFailed(Error error) {
             }
-        }).addParam("start_x", tmpRoom.getStartLon())
-                .addParam("start_y", tmpRoom.getStartLat())
-                .addParam("end_x", tmpRoom.getEndLon())
-                .addParam("end_y", tmpRoom.getEndLat()).start();
+        }).addParam("start_lat", tmpRoom.getStartLat())
+                .addParam("start_lon", tmpRoom.getStartLon())
+                .addParam("start_lat", tmpRoom.getEndLat())
+                .addParam("end_lon", tmpRoom.getEndLon()).start();
+//    }).addParam("start_lon", tmpRoom.getStartLat())
+//            .addParam("start_lat", tmpRoom.getStartLon())
+//            .addParam("start_lon", tmpRoom.getEndLat())
+//            .addParam("end_lat", tmpRoom.getEndLon()).start();
     }
     private void setViewIds(){
         recyclerView_roomlist = (RecyclerView) findViewById(R.id.recyclerView_roomlist);
@@ -138,7 +140,6 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     @Override
     public void onItemClick(View view, int position) {
             Intent intent = new Intent(RoomListActivity.this, RoomActivity.class);
-            intent.putExtra("info_id",info_id);
             intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
 //            intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
             startActivity(intent);
