@@ -3,7 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/view_line"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,17 +11,18 @@
         android:gravity="center"
         android:text="별점 주기"/>
     <!-- people info -->
-    <include layout="@layout/view_calculator_people_score"/>
+    <include layout="@layout/view_calculator_people_score" android:visibility="gone"/>
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <ListView
-        android:id="@+id/calcullistview"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.RecyclerView
+    android:id="@+id/calcullistview"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:divider="#ffcc22"
-    android:dividerHeight="1.5dp"
+    android:divider="@color/darkGray"
+    android:dividerHeight="0.5dp"
     android:choiceMode="singleChoice"
     />
 </LinearLayout>
@@ -125,6 +125,7 @@
         android:gravity="bottom"
         >
         <Button
+            android:id="@+id/bt_calcul"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPoint"

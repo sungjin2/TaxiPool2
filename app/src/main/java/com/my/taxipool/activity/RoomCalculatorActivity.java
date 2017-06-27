@@ -2,10 +2,14 @@ package com.my.taxipool.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -13,27 +17,33 @@ import android.widget.TextView;
 
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.Calculator_ListViewAdapter;
+import com.my.taxipool.adapter.RoomListRecyclerAdapter;
+import com.my.taxipool.adapter.RoomListRecyclerAdapterInterface;
+import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.vo.CustomerInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-    /**
+import javax.xml.xpath.XPathExpression;
+
+/**
  * Created by KITRI on 2017-06-20.
  */
 
-public class RoomCalculatorActivity extends Activity{
+public class RoomCalculatorActivity extends Activity implements RoomListRecyclerAdapterInterface.OnItemClickListener{
     EditText[] ed_taxicalcul;
-    TextView tv_calculator_price, tv_calculator_block;
-    RatingBar rb_calcul_addscore;
+    TextView tv_calculator_price;
     boolean taxicalcul_nullcheck;
-        double price;
+    double price;
     JSONArray result;
-    String nickname;
-    String info_id;
-    Calculator_ListViewAdapter adapter;
-    ArrayList<PeopleListItem> data;
+    private Calculator_ListViewAdapter adapter;
+    ArrayList<CustomerInfo> data;
+    private RecyclerView calcullrecycle;
+    Button bt_calcul;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +54,11 @@ public class RoomCalculatorActivity extends Activity{
         ed_taxicalcul[1] = (EditText) findViewById(R.id.ed_taxicalcul2);
         ed_taxicalcul[2] = (EditText) findViewById(R.id.ed_taxicalcul3);
 
+        calcullrecycle = (RecyclerView) findViewById(R.id.calcullistview);
+        calcullrecycle.setLayoutManager(new LinearLayoutManager(this));
+
         tv_calculator_price = (TextView) findViewById(R.id.tv_calculator_price);
-        tv_calculator_block = (TextView) findViewById(R.id.tv_calculator_block);
-        rb_calcul_addscore = (RatingBar) findViewById(R.id.ratingbar_score);
-        final ListView calcullistview = (ListView) findViewById(R.id.calcullistview);
+        bt_calcul = (Button)findViewById(R.id.bt_calcul);
 
         taxicalcul_nullcheck = true;
 
@@ -55,7 +66,7 @@ public class RoomCalculatorActivity extends Activity{
         ed_taxicalcul[1].addTextChangedListener(listener);
         ed_taxicalcul[2].addTextChangedListener(listener);
 
-        rb_calcul_addscore.setRating(3);
+
 
         //EditText가 클릭되면 안에 값 제거
         for (int i = 0; i < 3; i++) {
@@ -69,12 +80,7 @@ public class RoomCalculatorActivity extends Activity{
                 }
             });
         }
-        tv_calculator_block.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tv_calculator_block.setText("차단 완료");
-            }
-        });
+
         data = new ArrayList<>();
 
 
@@ -83,81 +89,105 @@ public class RoomCalculatorActivity extends Activity{
         //room_no 는 받아와야함
 
         //HttpURLConnection conn = null;
-
-        new Thread(){
+        new CommuServer(CommuServer.SELECT_PEOPLE_ROOMSHARE, new CommuServer.OnCommuListener() {
             @Override
-            public void run() {
-                String url = "http://192.168.12.30:8888/taxi_db_test2/roomsharepeople.do";
-                String room_no = "2";
-                String queryString = "room_no="+room_no;
-                /*try {
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    bw.write(query);
-                    bw.flush();
-                    bw.close();
-                }catch (Exception e) {
-                }*/
-                Log.d("ddu","들어옴");
-//                NetworkTest nt = new NetworkTest();
-                //result = null;
-//                result = nt.jsonArrayNetwork(url, queryString);
-                Log.d("ddu","넷 끝나고 result:"+result);
-                Log.d("ddu","들어옴"+result.toString());
-                try{
-                    for(int i=0; i<result.length(); i++){
-
-    data.add(new PeopleListItem(result.getJSONObject(i).getString("nickname"), result.getJSONObject(i).getString("info_id")));
-
-                        Log.d("ddu",nickname+" "+info_id);
+            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                Log.d("ddu result!!", arr.toString());
+                result = arr;
+                try {
+                    for (int i = 0; i < result.length(); i++) {
+                        CustomerInfo customerInfo = new CustomerInfo();
+                        customerInfo.setInfo_id(result.getJSONObject(i).getString("share_info_id"));
+                        customerInfo.setNickname(result.getJSONObject(i).getString("nickname"));
+                        customerInfo.setProfile_pic(result.getJSONObject(i).getString("profile_pic"));
+                        data.add(customerInfo);
+                        Log.d("ddu", result.getJSONObject(i).getString("nickname") + " " + result.getJSONObject(i).getString("share_info_id"));
                     }
-                    adapter = new Calculator_ListViewAdapter(RoomCalculatorActivity.this, R.layout.view_calculator_people_score,data);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            calcullistview.setAdapter(adapter);
-
-                        }
-                    });
-
-                }catch(JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                setAdapter(RoomCalculatorActivity.this);
             }
-        }.start();
+
+            @Override
+            public void onFailed(Error error) {
+            }
+        }).addParam("room_no", "2").start();
+
+ /*       bt_calcul.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });*/
+
+        bt_calcul.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0;i<data.size();i++) {
+                    new CommuServer(CommuServer.UPDATE_ADDSCORE, new CommuServer.OnCommuListener() {
+                        @Override
+                        public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                            Log.d("되나", "ddu");
+                        }
+
+                        @Override
+                        public void onFailed(Error error) {
+                            Log.d("안되나", "ddu");
+                        }
+                    }).addParam("info_id", data.get(i).getInfo_id())
+                      .addParam("score", (int)data.get(i).getResultscore()).start();
+                }
+            }
+        });
+
 
 
     }
 
-TextWatcher listener =
-    new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            taxicalcul_nullcheck=true;
-        }
+    public void setAdapter(final RoomListRecyclerAdapterInterface.OnItemClickListener listener){
+        adapter = new Calculator_ListViewAdapter(data, RoomCalculatorActivity.this, listener);
+        calcullrecycle.setAdapter(adapter);
+    }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            for (int j = 0; j < 3; j++){
-
-                if(ed_taxicalcul[j].getText().toString().equals("")){
-                    taxicalcul_nullcheck = false;
-                    price=0;
-                }else if(ed_taxicalcul[j].getText().toString().equals("0")){
-                    price=0;
-                    taxicalcul_nullcheck=false;
+    //돈 계산하기
+    TextWatcher listener =
+            new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    taxicalcul_nullcheck=true;
                 }
-            }
-            if (taxicalcul_nullcheck){
-                price = Double.parseDouble(ed_taxicalcul[0].getText().toString())/Double.parseDouble(ed_taxicalcul[1].getText().toString())*Double.parseDouble(ed_taxicalcul[2].getText().toString());
 
-            }
-            tv_calculator_price.setText(price+"원");
-        }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-    };
+                    for (int j = 0; j < 3; j++){
+
+                        if(ed_taxicalcul[j].getText().toString().equals("")){
+                            taxicalcul_nullcheck = false;
+                            price=0;
+                        }else if(ed_taxicalcul[j].getText().toString().equals("0")){
+                            price=0;
+                            taxicalcul_nullcheck=false;
+                        }
+                    }
+                    if (taxicalcul_nullcheck){
+                        price = Double.parseDouble(ed_taxicalcul[0].getText().toString())/Double.parseDouble(ed_taxicalcul[1].getText().toString())*Double.parseDouble(ed_taxicalcul[2].getText().toString());
+
+                    }
+                    tv_calculator_price.setText(price+"원");
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            };
+
+
+
+
+    @Override
+    public void onItemClick(View view, int position) {
+
+    }
 }
