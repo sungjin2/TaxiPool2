@@ -18,7 +18,7 @@ public class Set {
         PREFERENCE_NAME=preferenceName;
     }
     public static void Delete(Context ctx, String key) {
-        SharedPreferences prefs = ctx.getSharedPreferences(PREFERENCE_NAME,
+            SharedPreferences prefs = ctx.getSharedPreferences(PREFERENCE_NAME,
                 ctx.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.remove(key); // 삭제

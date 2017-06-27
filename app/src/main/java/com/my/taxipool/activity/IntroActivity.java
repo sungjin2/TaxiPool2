@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.my.taxipool.R;
+import com.my.taxipool.util.Set;
+import com.my.taxipool.vo.Room;
 
 /**
  * Created by Hyeon on 2016-05-25.
@@ -22,16 +24,16 @@ public class IntroActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-               /* Intent intent = null;
-                int info_id = Set.Load(IntroActivity.this,"info_id",-1);
-                if( -1 != info_id){
+                Intent intent = null;
+                Set.Delete(IntroActivity.this);
+                String info_id = Set.Load(IntroActivity.this,"info_id","135425414");
+                if( null != info_id){
                     //id있을 때 - 어플 받고 로그인이력 1번 이상
                     String room_no = Set.Load(IntroActivity.this, "room_no", "NO_ROOM");
-                    String state = Set.Load(IntroActivity.this, "state", "NO_STATE");
-
                     if(room_no.equals("NO_ROOM")){
-                        intent = new Intent(IntroActivity.this,HomeActivity.class);
+                        intent = new Intent(IntroActivity.this,HomeActivity2.class);
                     }else{
+                        int state = Set.Load(IntroActivity.this, "state", Room.NO_MEMBER);
                         intent = new Intent(IntroActivity.this,RoomActivity.class);
                         intent.putExtra("state", state);
                         intent.putExtra("room_no_from_intro", room_no);
@@ -41,11 +43,6 @@ public class IntroActivity extends AppCompatActivity {
                     intent = new Intent(IntroActivity.this, LoginActivity.class);
                 }
                 startActivity(intent);
-                finish();*/
-
-                int info_id = 135425414;
-                startActivity(new Intent(IntroActivity.this,HomeActivity.class)
-                        .putExtra("info_id", info_id));
                 finish();
             }
         }, 3000);

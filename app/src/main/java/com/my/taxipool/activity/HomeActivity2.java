@@ -1,6 +1,8 @@
 package com.my.taxipool.activity;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -15,21 +17,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +57,9 @@ import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.ImageHelper;
 import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.util.Set;
+import com.my.taxipool.view.InputCustomView;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.TmpRoom;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,26 +74,30 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnCameraIdleListener, OnMapReadyCallback,View.OnTouchListener
+public class HomeActivity2 extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnCameraIdleListener, OnMapReadyCallback
         ,GoogleApiClient.OnConnectionFailedListener {
 
+    //for data
     public static CustomerInfo myInfo;
-    TmpRoom tmpRoom= new TmpRoom();
-    String info_id;
+    private TmpRoom tmpRoom= new TmpRoom();
+    private String info_id;
 
-    //Big views
-    private SlidingUpPanelLayout mLayout;
     private NavigationView navigationView;
     private DrawerLayout drawer;
+    private ActionBar actionbar;
     private Toolbar toolbar;
 
     //For Input Views
-    private TextView tv_from;    private TextView tv_to;    private TextView tv_time;
-    private Button btn;    private Spinner spinner_people;
-    private RadioButton radio_bill; private RadioButton radio_point; private RadioButton radio_all;
+    private LinearLayout layout_inputs;
+    private InputCustomView view_spot_from;
+    private InputCustomView view_spot_to;
+    private InputCustomView view_time;
 
-    Button btn_place_auto;
+//    private Button btn_place_auto;
+    private Button btn_home;
+
+    private  Boolean flag_fromto = false;
 
     //For Hamburger Views
     private ImageView img_nav_info;
@@ -104,13 +110,12 @@ public class HomeActivity extends AppCompatActivity
     MarkerOptions markeropt_end;
     HashMap<String,MarkerOptions> hashMapMarker = new HashMap<>();
 
+    LinearLayout layout_home_indicator;
     ImageView img_marker;
     TextView tv_home_indicator;
 
     private TextView tv_spotname;       //Marker's textview
     private LinearLayout view_point;    //Marker
-    private LinearLayout layout_spot_from;   //한칸 (출발지)
-    private LinearLayout layout_spot_to;   //한칸 (출발지)
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
 
@@ -120,18 +125,18 @@ public class HomeActivity extends AppCompatActivity
     private static final int PLACE_AUTOCOMPLETE_FROM = 1;
 
     long time;
-    boolean fromto_flag = false;    //false가 from차례 true= to
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_home2);
 
-        info_id = Set.Load(HomeActivity.this,"info_id",null);
+        info_id = Set.Load(HomeActivity2.this,"info_id",null);
         info_id = "135425414";
+
         /* Google map start */
         FragmentManager manager = getSupportFragmentManager();
-        mapFragment = (SupportMapFragment)manager.findFragmentById(R.id.map_sliding);
+        mapFragment = (SupportMapFragment)manager.findFragmentById(R.id.map_home);
         mapFragment.getMapAsync(this);//지도준비가 되면 onMapReady()가 자동호출됨
         /* Google map end */
 
@@ -145,9 +150,7 @@ public class HomeActivity extends AppCompatActivity
         /* Autocomplete end*/
 
         setViewIds();
-        initBottomDrawer();
         setViews();
-
         new CommuServer(CommuServer.SELECT_BY_INFOID, new CommuServer.OnCommuListener() {
             @Override
             public void onSuccess(JSONObject object, JSONArray arr, String str) {
@@ -176,27 +179,22 @@ public class HomeActivity extends AppCompatActivity
             public void onFailed(Error error) {
             }
         }).addParam("info_id", info_id).start();
+
     }
 
     private void setViewIds(){
-        //Sliding Layout
-        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        //toolbar & drawer & navi
-        toolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        //For Input Views
+        layout_inputs = (LinearLayout) findViewById(R.id.layout_inputs);
+        view_spot_from = (InputCustomView) findViewById(R.id.view_spot_from);
+        view_spot_to = (InputCustomView) findViewById(R.id.view_spot_to);
+        view_time = (InputCustomView) findViewById(R.id.view_time);
 
-        //input리스트
-        layout_spot_from = (LinearLayout) findViewById(R.id.layout_spot_from);
-        layout_spot_to = (LinearLayout) findViewById(R.id.layout_spot_to);
-        view_point = (LinearLayout) findViewById(R.id.view_point);
-        tv_from = (TextView) findViewById(R.id.tv_from);
-        tv_to = (TextView) findViewById(R.id.tv_to);
-        tv_time = (TextView) findViewById(R.id.tv_time);
-        spinner_people = (Spinner) findViewById(R.id.spinner);
-        radio_bill= (RadioButton) findViewById(R.id.radio_bill);
-        radio_point= (RadioButton) findViewById(R.id.radio_point);
-        radio_all= (RadioButton) findViewById(R.id.radio_all);
+        btn_home = (Button)  findViewById(R.id.btn_home);
+
+        //toolbar & drawer & navi
+        toolbar = (Toolbar) findViewById(R.id.toolbar_home2);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         //Views in Hamburger
         View headerLayout = navigationView.getHeaderView(0);
@@ -205,29 +203,18 @@ public class HomeActivity extends AppCompatActivity
         tv_nav_info_nickandphone = (TextView) headerLayout.findViewById(R.id.tv_nav_info_nickandphone);
 
         //Marker
-        view_point = (LinearLayout) findViewById(R.id.view_point);
+        view_point = (LinearLayout) findViewById(R.id.view_point);                              //전체
+        layout_home_indicator = (LinearLayout) findViewById(R.id.layout_home_indicator);    //말풍선
         img_marker = (ImageView) findViewById(R.id.ic_place);
         tv_spotname = (TextView) findViewById(R.id.tv_spotname);
-        btn = (Button) findViewById(R.id.button_exam);
         tv_home_indicator  = (TextView) findViewById(R.id.tv_home_indicator);
-
-        btn_place_auto = (Button) findViewById(R.id.btn_place_auto);
     }
 
     private void setViews() {
-
-        mLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // ignore all touch events
-                return true;
-            }
-        });
-
-        view_point.post(new Runnable() {
+        layout_home_indicator.post(new Runnable() {
             @Override
             public void run() {
-                int height = view_point.getHeight();
+                int height = layout_home_indicator.getHeight();
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(img_marker.getLayoutParams());
                 lp.setMargins(0, 0, 0, height);
                 img_marker.setLayoutParams(lp);
@@ -242,29 +229,49 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        //setOnTouchListener
-        btn.setOnTouchListener(this);
-        tv_spotname.setOnTouchListener(this);
-        layout_spot_from.setOnTouchListener(this);
-        layout_spot_to.setOnTouchListener(this);
+        //Set clicklistener about input
+        view_spot_from.setOnClickListener(input_click_listener);
+        view_spot_to.setOnClickListener(input_click_listener);
 
-        radio_bill.setOnClickListener(optionOnClickListener);
-        radio_point.setOnClickListener(optionOnClickListener);
-        radio_all.setOnClickListener(optionOnClickListener);
+        //Set basic clicklistener
+        view_time.setOnClickListener(basic_click_listener);
+        btn_home.setOnClickListener(basic_click_listener);
+        layout_home_indicator.setOnClickListener(basic_click_listener);
 
-        spinner_people.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                tmpRoom.setPeopleWith(position+1);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        ActionBar actionBar = getSupportActionBar();
+
+        // Custom Actionbar를 사용하기 위해 CustomEnabled을 true 시키고 필요 없는 것은 false 시킨다
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);         //액션바 아이콘을 업 네비게이션 형태(<)로 표시합니다.
+        actionBar.setDisplayShowTitleEnabled(false);        //액션바에 표시되는 제목의 표시유무를 설정
+        actionBar.setDisplayShowHomeEnabled(false);            //홈 아이콘을 숨김처리합니다.
+
+        //layout을 가지고 와서 actionbar에 포팅을 시킵니다.
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View actionbar = inflater.inflate(R.layout.actionbar_custom, null);
+
+        actionBar.setCustomView(actionbar);
+        ImageButton btn_right = (ImageButton) actionbar.findViewById(R.id.btn_right);
+        btn_right.setOnClickListener(new View.OnClickListener(){
+              @Override
+              public void onClick(View v) {
+                  openAutocompleteActivity(flag_fromto);
+              }
+          }
+        );
+        //액션바 양쪽 공백 없애기
+        Toolbar parent = (Toolbar)actionbar.getParent();
+        parent.setContentInsetsAbsolute(0,0);
+
+        return true;
+    }
+
+    //get myinfo for hamberger menu
     private void setMyinfo() {
-        //setHamburger Views start
         Thread mThread = new Thread(){
             @Override
             public void run(){
@@ -288,189 +295,24 @@ public class HomeActivity extends AppCompatActivity
             img_nav_info.setImageBitmap(bitmap);
             tv_nav_infoname.setText(myInfo.getNickname());
             tv_nav_info_nickandphone.setText(myInfo.getInfo_name()+" / "+myInfo.getPhone_no());
-        }catch(InterruptedException e){
+        }catch(InterruptedException e) {
             e.printStackTrace();
         }
-        //setHamburger Views end
-
-        btn_place_auto.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                if(fromto_flag){
-                    openAutocompleteActivity("to");
-                }else{
-                    openAutocompleteActivity("from");
-                }
-            }
-        });
     }
 
-    private void initBottomDrawer() {
-//        mLayout.setFadeOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//            }
-//        });
-        mLayout.setTouchEnabled(false);
-
-        layout_spot_from.post(new Runnable() {
-            @Override
-            public void run() {
-                int height = layout_spot_from.getHeight() * 2; //height is ready
-                mLayout.setPanelHeight(height);
-            }
-        }); //panel height 설정
-        mLayout.setOverlayed(false);
-        mLayout.setCoveredFadeColor(00000000);
-        mLayout.setDragView(R.id.dragView);
-        //배경 비활성화
-    }
-
-    private RadioButton.OnClickListener optionOnClickListener
-            = new RadioButton.OnClickListener() {
-        public void onClick(View v) {
-            if(radio_all.isChecked()){
-                tmpRoom.setWay(3);
-            }  else if(radio_bill.isChecked()){
-                tmpRoom.setWay(2);
-            }  else if(radio_point.isChecked()){
-                tmpRoom.setWay(1);
-            }
-        }
-    };
-
-    @Override
-    public boolean onTouch(View v, final MotionEvent event) {
-        try{
-            if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (v == btn) {
-                    Log.d("TAG", "In onTouch button");
-                    new Thread() {
-                        public void run() {
-//                            GetDistance gd = new GetDistance();
-//                            final JSONObject distances = gd.getDistance(tmpRoom.getStartLat(),tmpRoom.getStartLon(),tmpRoom.getEndLat(),tmpRoom.getEndLon());
-                            //getdistanceJSON(distances);
-                            Intent intent = new Intent(HomeActivity.this,RoomListActivity.class);
-                            intent.putExtra("object",tmpRoom);
-                            startActivity(intent);
-                        }
-                    }.start();
-                    return true;
-
-                } else if (v == tv_spotname) {
-                    LatLng latLng = googleMap.getCameraPosition().target;
-                    if(!fromto_flag){   //출발지 설정
-                        fromto_flag = true;
-                        view_point.setVisibility(View.INVISIBLE);
-                        tv_from.setText(tv_spotname.getText().toString());
-                        tv_from.setTextColor(getResources().getColor(R.color.darkGray));
-
-                        tmpRoom.setStartSpot(tv_spotname.getText().toString());
-                        tmpRoom.setStartLat(latLng.latitude);
-                        tmpRoom.setStartLon(latLng.longitude);
-
-                        markeropt_start
-                                .position(latLng)
-                                .snippet(tv_spotname.getText().toString());
-                        hashMapMarker.put("start",markeropt_start);
-
-                    }else {
-                        fromto_flag = false;
-                        view_point.setVisibility(View.INVISIBLE);
-                        tv_to.setText(tv_spotname.getText().toString());
-                        tv_to.setTextColor(getResources().getColor(R.color.darkGray));
-
-                        tmpRoom.setEndSpot(tv_spotname.getText().toString());
-                        tmpRoom.setEndLat(latLng.latitude);
-                        tmpRoom.setEndLon(latLng.longitude);
-
-                        markeropt_end
-                                .position(latLng)
-                                .snippet(tv_spotname.getText().toString());
-                        hashMapMarker.put("end",markeropt_end);
-                    }
-                    googleMap.clear();
-
-                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                    boolean flag_start = false;
-                    boolean flag_end = false;
-                    if(hashMapMarker.containsKey("start")){
-                        googleMap.addMarker(hashMapMarker.get("start"));
-                        builder.include(hashMapMarker.get("start").getPosition());
-                        flag_start = true;
-                    }
-                    if(hashMapMarker.containsKey("end")) {
-                        googleMap.addMarker(hashMapMarker.get("end"));
-                        builder.include(hashMapMarker.get("end").getPosition());
-                        flag_end = true;
-                    }
-                    if( flag_start && flag_end ){
-                        LatLngBounds bounds = builder.build();
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
-                    }
-
-                    return true;
-                } else if (v == layout_spot_from) {
-//                    openAutocompleteActivity("from");
-                    mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    view_point.setVisibility(View.VISIBLE);
-                    tv_home_indicator.setText("이 위치로 출발지 설정");
-                    fromto_flag = false;
-
-                    tv_from.setText("핀을 클릭해 출발지를 지정해주세요");
-                    tv_from.setTextColor(getResources().getColor(R.color.colorPink));
-
-                    hashMapMarker.remove("start");
-                    googleMap.clear();
-                    if(hashMapMarker.containsKey("start"))
-                        googleMap.addMarker(hashMapMarker.get("start"));
-                    if(hashMapMarker.containsKey("end"))
-                        googleMap.addMarker(hashMapMarker.get("end"));
-                    return true;
-                } else if (v == layout_spot_to) {
-//                    openAutocompleteActivity("to");
-                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    view_point.setVisibility(View.VISIBLE);
-                    tv_home_indicator.setText("이 위치로 도착지 설정");
-                    tv_to.setText("핀을 클릭해 도착지를 지정해주세요");
-                    tv_to.setTextColor(getResources().getColor(R.color.colorPink));
-                    fromto_flag = true;
-
-                    hashMapMarker.remove("end");
-                    googleMap.clear();
-                    if(hashMapMarker.containsKey("start"))
-                        googleMap.addMarker(hashMapMarker.get("start"));
-                    if(hashMapMarker.containsKey("end"))
-                        googleMap.addMarker(hashMapMarker.get("end"));
-                    return true;
-                }else if (v == tv_time){
-                }
-            }
-        }catch (Exception e){
-            Log.d("TAG", e.getMessage());
-        }
-        return false;
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
-    //햄버거 네비게이션 선택
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        /*if (id == 0) {
-        } else if (id == 1) {
-        } else if (id == 2) {
-        }*/
         switch (id) {
             case R.id.nav_sub_boardlist:
                 break;
             case R.id.nav_sub_blocklist:
-                Intent intent = new Intent(HomeActivity.this, BlockActivity.class);
+                Intent intent = new Intent(HomeActivity2.this, BlockActivity.class);
                 startActivity(intent);
                 break;
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -491,7 +333,7 @@ public class HomeActivity extends AppCompatActivity
         googleMap.setOnCameraIdleListener(this);
 
         ImageResourceUtil util = new ImageResourceUtil();
-        Bitmap bitmap_icon = util.getBitmap(HomeActivity.this,R.drawable.ic_place_yellow_24dp);
+        Bitmap bitmap_icon = util.getBitmap(HomeActivity2.this,R.drawable.ic_place_yellow_24dp);
         bitmap_icon = resizeMapIcons(bitmap_icon,150,150);
 
         markeropt_start = new MarkerOptions();
@@ -510,7 +352,6 @@ public class HomeActivity extends AppCompatActivity
         } else {
             tv_spotname.setText("GPS 권한설정이 필요합니다");
         }
-
     }
 
     public String getmarkerAddress(LatLng latLng){
@@ -540,49 +381,21 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else if (mLayout != null &&
-                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            Log.d("ddu layout","COLLAPSED");
-
-            boolean flag_start = false;
-            boolean flag_end = false;
-            if(hashMapMarker.containsKey("start")){
-                googleMap.addMarker(hashMapMarker.get("start"));
-                builder.include(hashMapMarker.get("start").getPosition());
-                flag_start = true;
-            }
-            if(hashMapMarker.containsKey("end")) {
-                googleMap.addMarker(hashMapMarker.get("end"));
-                builder.include(hashMapMarker.get("end").getPosition());
-                flag_end = true;
-            }
-            if( flag_start && flag_end ){
-                LatLngBounds bounds = builder.build();
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
-            }
-
-        }else if (mLayout != null &&
-                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)) {
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-            Log.d("ddu layout","이제 EXPANDED");
+        }else if(layout_inputs.getVisibility() == View.GONE){
+            showInputs(true);
         }else{
             super.onBackPressed();
         }
     }
 
-    private void openAutocompleteActivity(String flag_from_to) {
+    private void openAutocompleteActivity(Boolean flag_from_to) {
         try {
-            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                .build(this);
-            if(flag_from_to.equals("from")){
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(this);
+            if(!flag_from_to){
                 startActivityForResult(intent, PLACE_AUTOCOMPLETE_FROM);
-            }else if(flag_from_to.equals("to")){
+            }else{
                 startActivityForResult(intent, PLACE_AUTOCOMPLETE_TO);
             }
         } catch (GooglePlayServicesRepairableException e) {
@@ -600,24 +413,21 @@ public class HomeActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             Place place = PlaceAutocomplete.getPlace(this, data);
-            if(requestCode == PLACE_AUTOCOMPLETE_FROM){   //출발지 설정
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+            if(requestCode == PLACE_AUTOCOMPLETE_FROM){   //출발지 설정
                 tv_home_indicator.setText("이 위치로 출발지 설정");
                 tv_home_indicator.setTextColor(getResources().getColor(R.color.colorPink));
                 img_marker.setImageResource(R.drawable.ic_place_yellow_24dp);
-                tv_spotname.setText(formatPlaceDetails(getResources(), place.getName(), place.getAddress()));
-                fromto_flag = false;
-            }else if (requestCode == PLACE_AUTOCOMPLETE_TO) {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                flag_fromto = false;
 
+            }else if (requestCode == PLACE_AUTOCOMPLETE_TO) {
                 tv_home_indicator.setText("이 위치로 도착지 설정");
                 tv_home_indicator.setTextColor(getResources().getColor(R.color.colorDart));
-                tv_spotname.setText(formatPlaceDetails(getResources(), place.getName(), place.getAddress()));
-                fromto_flag = true;
+                flag_fromto = true;
             }
+
         }else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
             Status status = PlaceAutocomplete.getStatus(this, data);
         } else if (resultCode == RESULT_CANCELED) {
@@ -626,6 +436,118 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    public View.OnClickListener input_click_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            showInputs(false);
+            Log.d("ddu","click");
+            switch (id) {
+                case R.id.view_spot_from:
+                    Log.d("ddu","from click");
+                    tv_home_indicator.setText("이 위치로 출발지 설정");
+                    tv_home_indicator.setTextColor(getResources().getColor(R.color.colorPink));
+                    break;
+                case R.id.view_spot_to:
+                    Log.d("ddu","to click");
+                    tv_home_indicator.setText("이 위치로 도착지 설정");
+                    tv_home_indicator.setTextColor(getResources().getColor(R.color.colorDart));
+                    break;
+            }
+        }
+    };
+
+    public View.OnClickListener basic_click_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.view_time:
+                    break;
+//                case R.id.btn_place_auto2:
+//                    openAutocompleteActivity(flag_fromto);
+//                    break;
+                case R.id.btn_home:
+                    Intent intent = new Intent(HomeActivity2.this,RoomListActivity.class);
+                    intent.putExtra("object",tmpRoom);
+                    startActivity(intent);
+                    break;
+                case R.id.layout_home_indicator:
+                    LatLng latLng = googleMap.getCameraPosition().target;
+                    if(!flag_fromto){   //출발지 설정
+                        flag_fromto = true;
+                        view_spot_from.setRightLabel(tv_spotname.getText().toString());
+                        tmpRoom.setStartSpot(tv_spotname.getText().toString());
+                        tmpRoom.setStartLat(latLng.latitude);
+                        tmpRoom.setStartLon(latLng.longitude);
+
+                        markeropt_start
+                                .position(latLng)
+                                .snippet(tv_spotname.getText().toString());
+                        hashMapMarker.put("start",markeropt_start);
+                    }else {
+                        flag_fromto = false;
+                        view_spot_to.setRightLabel(tv_spotname.getText().toString());
+
+                        tmpRoom.setEndSpot(tv_spotname.getText().toString());
+                        tmpRoom.setEndLat(latLng.latitude);
+                        tmpRoom.setEndLon(latLng.longitude);
+
+                        markeropt_end
+                                .position(latLng)
+                                .snippet(tv_spotname.getText().toString());
+                        hashMapMarker.put("end",markeropt_end);
+                    }
+                    googleMap.clear();
+                    refreshMarkers();
+                    showInputs(true);
+                    break;
+            }
+        }
+    };
+
+
+//    custom methods
+    private void showInputs(boolean flag){
+        //true = VISIBLE, false = GONE
+        if(flag){
+            layout_inputs.setVisibility(View.VISIBLE);
+            view_point.setVisibility(View.GONE);
+        }else{
+            layout_inputs.animate()
+                    .translationY(layout_inputs.getHeight())
+                    .alpha(0.0f)
+                    .setDuration(300)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            layout_inputs.setVisibility(View.GONE);
+                        }
+                    });
+            view_point.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void refreshMarkers(){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        boolean flag_start = false;
+        boolean flag_end = false;
+        if(hashMapMarker.containsKey("start")){
+            googleMap.addMarker(hashMapMarker.get("start"));
+            builder.include(hashMapMarker.get("start").getPosition());
+            flag_start = true;
+        }
+        if(hashMapMarker.containsKey("end")) {
+            googleMap.addMarker(hashMapMarker.get("end"));
+            builder.include(hashMapMarker.get("end").getPosition());
+            flag_end = true;
+        }
+        if( flag_start && flag_end ){
+            LatLngBounds bounds = builder.build();
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+        }
     }
 
     private static Spanned formatPlaceDetails(Resources res, CharSequence name,CharSequence address) {

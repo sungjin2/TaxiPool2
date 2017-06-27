@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="#ffffffff"
-    android:layout_marginTop="1dp">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:background="@drawable/selector_item_white">
         <TextView
             android:id="@+id/leftTextView"
             android:layout_width="60dp"
@@ -18,8 +17,8 @@
             android:id="@+id/rightTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/darkGray"
             android:layout_margin="15dp"
-            android:textSize="17sp"
+            android:textColor="@color/colorPink"
+            android:textSize="14sp"
             android:text="contents"/>
 </LinearLayout>

@@ -52,6 +52,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyCallback{
+
+    String info_id;
     TextView tv_regist_start_spot,tv_regist_end_spot;
     MarkerOptions startMarkerOption, endMarkerOption;
     GoogleMap googlemapTmp;
@@ -69,8 +71,9 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
     //inputValues
     private String can_alcohol="y";    private String gender="0";
-    private String room_no;
+    private int room_no;
     private Date time;
+    private  String strstart_time;
     TmpRoom tmpRoom;
     Room room;
 
@@ -84,6 +87,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         mapFragment.getMapAsync(this);
         //지도준비 -> onMapReady() 자동호출
 
+        info_id = Set.Load(RoomRegistActivity.this,"info_id",null);
+        info_id = "135425414";
         setViewIds();
         setViews();
     }
@@ -164,7 +169,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                     pay = "c";
                 }
 
-                room = new Room(0,"135425414",
+                room = new Room(0,info_id,
                         spin_regist_peoplenum.getSelectedItemPosition()+1,
                         pay,gender,can_alcohol,tv_regist_start_spot.getText().toString(),
                         tv_regist_end_spot.getText().toString(),
@@ -186,9 +191,10 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                     @Override
                                     public void onSuccess(JSONObject object, JSONArray arr, String str) {
                                         Log.d("ddu result!!",str);
-                                        room_no = str;
+                                        room_no = Integer.parseInt(str);
                                         Intent intent = new Intent(RoomRegistActivity.this, RoomActivity.class);
                                         Set.Save(RoomRegistActivity.this,"room_no",room_no);
+                                        intent.putExtra("room_no_from_regist",room_no);
                                         intent.putExtra("state",Room.WAIT_TOGO);
                                         startActivity(intent);
                                         finish();
@@ -203,10 +209,11 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                         .addParam("alcohol", room.getAlcohol())
                                         .addParam("start_spot", room.getStart_spot())
                                         .addParam("end_spot", room.getEnd_spot())
-                                        .addParam("start_x", room.getStart_x())
-                                        .addParam("start_y", room.getStart_y())
-                                        .addParam("end_x", room.getEnd_x())
-                                        .addParam("end_y", room.getEnd_y()).start();
+                                        .addParam("start_lon", room.getStart_lon())
+                                        .addParam("start_lat", room.getStart_lat())
+                                        .addParam("end_lon", room.getEnd_lon())
+                                        .addParam("end_lat", room.getEnd_lat())
+                                        .addParam("start_time", strstart_time).start();
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -267,7 +274,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                         calendar.add(Calendar.DATE, 1);
                                     }
                                 }
-                                String strstart_time = sdfday.format(calendar.getTimeInMillis())+" "+hourOfDay+":"+""+minute;
+                                 strstart_time = sdfday.format(calendar.getTimeInMillis())+" "+hourOfDay+":"+""+minute;
                                 try {
                                     time = transFormat.parse(strstart_time);
                                 }catch (ParseException e){
