@@ -9,6 +9,7 @@ import android.widget.ListView;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.BlockListAdapter;
 import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.BlockCustomerInfo;
 
 import org.json.JSONArray;
@@ -36,15 +37,13 @@ public class BlockActivity extends AppCompatActivity{
     BlockListAdapter adapter;
     ArrayList<BlockCustomerInfo> data;
     ListView listView;
-
     String json_result = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int int_info_id = getIntent().getIntExtra("info_id",-1);
-        final String info_id = String.valueOf(int_info_id);
+
+        final String info_id = Set.Load(getApplicationContext(), "info_id", null);
         Log.d("BlockActivity", "info_id"+info_id);
-        //Activity
         setContentView(R.layout.activity_blocklist);
 
         //ListView

@@ -1,6 +1,8 @@
 package com.my.taxipool.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +43,7 @@ public class BlockListAdapter extends BaseAdapter {
     private int layout;
     private Context cont;
     private Bitmap bitmap;
+    private boolean dialogFlag;
 
 
     public BlockListAdapter(Context context, int layout, ArrayList<BlockCustomerInfo> data){
@@ -99,9 +102,50 @@ public class BlockListAdapter extends BaseAdapter {
         TextView tx_block_id = (TextView)convertView.findViewById(R.id.block_id);
         tx_block_id.setText(listviewitem.getBlockNickname());
 
+        dialogFlag = false;
+
         Button bt_cancel = (Button)convertView.findViewById(R.id.block_cancel);
         bt_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
+            public void onClick(View v) {
+                //AlertDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(cont);
+                builder.setTitle("정말로");
+                builder.setMessage(listviewitem.getBlockNickname()+"님을 차단하시겠습니까?");
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                new CommuServer(CommuServer.DELETE_BLOCKLIST, new CommuServer.OnCommuListener() {
+                                    @Override
+                                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                                        Log.d("ddu result!!", str.toString());
+                                        data.remove(position);
+                                        notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void onFailed(Error error) {
+                                    }
+                                }).addParam("info_id", listviewitem.getInfo_id())
+                                        .addParam("block_info_id", listviewitem.getBlockInfo_id()).start();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.cancel();
+                                break;
+                        }
+                    }
+                };
+
+                builder.setPositiveButton("네", dialogClickListener);
+                builder.setNegativeButton("잠깐만요", dialogClickListener);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            /*@Override
             public void onClick(View v) {
                 new CommuServer(CommuServer.DELETE_BLOCKLIST, new CommuServer.OnCommuListener() {
                     @Override
@@ -115,8 +159,9 @@ public class BlockListAdapter extends BaseAdapter {
                     }
                 }).addParam("info_id",listviewitem.getInfo_id())
                   .addParam("block_info_id", listviewitem.getBlockInfo_id()).start();
+            }*/
             }
-        });
+        });//onClickListner End
         return convertView;
     }
 }
