@@ -77,6 +77,7 @@ public class InputCustomView extends LinearLayout{
 //            rightTextView.setTextColor(getResources().getColor(color));
 //        }
 //    }
+
     public void setRightLabel(String rightLabel) {
         this.rightLabel = rightLabel;
         if (null != rightTextView) {
@@ -89,7 +90,11 @@ public class InputCustomView extends LinearLayout{
             leftTextView.setText(leftLabel);
         }
     }
-
+    public void setRightColor(int color) {
+        if (null != rightTextView) {
+            rightTextView.setTextColor(getResources().getColor(color));
+        }
+    }
     private void getAttrs(AttributeSet attrs) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.InputCustomView);
         setTypeArray(typedArray);

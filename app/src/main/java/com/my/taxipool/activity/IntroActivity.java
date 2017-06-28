@@ -24,9 +24,10 @@ public class IntroActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = null;
+                Intent intent;
                 Set.Delete(IntroActivity.this);
-                String info_id = Set.Load(IntroActivity.this,"info_id","135425414");
+                Set.Save(IntroActivity.this,"info_id","135425414");
+                String info_id = Set.Load(IntroActivity.this,"info_id",null);
                 if( null != info_id){
                     //id있을 때 - 어플 받고 로그인이력 1번 이상
                     String room_no = Set.Load(IntroActivity.this, "room_no", "NO_ROOM");
@@ -45,6 +46,6 @@ public class IntroActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000);
+        }, 1000);
     }
 }
