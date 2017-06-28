@@ -122,7 +122,7 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     private void setViews() {
         tv_myEndSpot.setText(tmpRoom.getEndSpot());
         tv_myStartSpot.setText(tmpRoom.getStartSpot());
-        tv_myStartTime.setText(tmpRoom.getTime());
+        tv_myStartTime.setText(tmpRoom.getStr_time());
         btn_goto_makeroom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -68,6 +68,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     private Spinner spin_regist_peoplenum;
     private Button bt_regist;
     private RadioButton rd;
+    SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     //inputValues
     private String can_alcohol="y";    private String gender="0";
@@ -76,7 +77,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     private  String strstart_time;
     TmpRoom tmpRoom;
     Room room;
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -91,6 +91,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         info_id = "135425414";
         setViewIds();
         setViews();
+
+
     }
 
     public void setViewIds(){
@@ -135,6 +137,9 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
         tv_regist_start_spot.setText(tmpRoom.getStartSpot());
         tv_regist_end_spot.setText(tmpRoom.getEndSpot());
+        tv_regist_time.setText(tmpRoom.getStr_time());
+        time = tmpRoom.getTime();
+        strstart_time = transFormat.format(time);
         tv_regist_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,6 +206,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                     }
                                     @Override
                                     public void onFailed(Error error) {
+                                        Log.i("ddu","넌 실패");
                                     }
                                 }).addParam("admin_id", room.getAdmin_id())
                                         .addParam("max_cnt", room.getMax_cnt())
@@ -241,15 +247,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                             @Override
                             public void onTimeSet(TimePicker view,
                                                   int hourOfDay, int minute) {
-
-                                if(hourOfDay>12) {
-                                    tv_regist_time.setText("오후" + (hourOfDay-12) + "시 " + minute + "분");
-                                }else if(hourOfDay==0){
-                                    tv_regist_time.setText("오전" + (hourOfDay+12) + "시 " + minute + "분");
-                                }else{
-                                    tv_regist_time.setText("오전" + hourOfDay + "시 " + minute + "분");
-                                }
-
                                 Calendar calendar = Calendar.getInstance();
                                 long now = System.currentTimeMillis();
 
@@ -258,22 +255,34 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                 SimpleDateFormat sdfday = new SimpleDateFormat("yyyy-MM-dd");
                                 SimpleDateFormat starthour = new SimpleDateFormat("HH");
                                 SimpleDateFormat startiminute = new SimpleDateFormat("mm");
-                                SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 
                                 int hour = Integer.parseInt(starthour.format(sysdate));
                                 int iminute = Integer.parseInt(startiminute.format(sysdate));
 
                                 calendar.setTime(sysdate);
 
-                                if(hourOfDay<hour){
-                                    Toast.makeText(getApplicationContext(), "현재시간보다 이전시간을 선택하셨습니다. 다음 날짜로 변경합니다.", Toast.LENGTH_LONG).show();
+                                if( hourOfDay < hour || (hourOfDay==hour && minute < iminute) ){
+                                    Toast.makeText(getApplicationContext(), "시간설정은 24시간 제한이므로 내일로 설정됩니다.", Toast.LENGTH_LONG).show();
                                     calendar.add(Calendar.DATE, 1);
-                                }else if(hourOfDay==hour){
-                                    if(minute<iminute) {
-                                        Toast.makeText(getApplicationContext(), "현재시간보다 이전시간을 선택하셨습니다. 다음 날짜로 변경합니다.", Toast.LENGTH_LONG).show();
-                                        calendar.add(Calendar.DATE, 1);
+                                    if(hourOfDay>12) {
+                                        tv_regist_time.setText("내일 오후" + (hourOfDay-12) + "시 " + minute + "분");
+                                    }else if(hourOfDay==0){
+                                        tv_regist_time.setText("내일 오전" + (hourOfDay+12) + "시 " + minute + "분");
+                                    }else{
+                                        tv_regist_time.setText("내일 오전" + hourOfDay + "시 " + minute + "분");
+                                    }
+                                }else{
+                                    if(hourOfDay>12) {
+                                        tv_regist_time.setText("오늘 오후" + (hourOfDay-12) + "시 " + minute + "분");
+                                    }else if(hourOfDay==0){
+                                        tv_regist_time.setText("오늘 오전" + (hourOfDay+12) + "시 " + minute + "분");
+                                    }else{
+                                        tv_regist_time.setText("오늘 오전" + hourOfDay + "시 " + minute + "분");
+
                                     }
                                 }
+
                                  strstart_time = sdfday.format(calendar.getTimeInMillis())+" "+hourOfDay+":"+""+minute;
                                 try {
                                     time = transFormat.parse(strstart_time);
