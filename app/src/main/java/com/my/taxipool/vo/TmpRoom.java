@@ -1,6 +1,7 @@
 package com.my.taxipool.vo;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -19,6 +20,8 @@ public class TmpRoom implements Serializable {
     int peopleWith;
     Date time;
     int way;
+    String str_time;
+
 
     public TmpRoom() {
     }
@@ -97,6 +100,13 @@ public class TmpRoom implements Serializable {
 
     public void setWay(int way) {
         this.way = way;
+    }
+
+    public String getStr_time() {
+        return str_time;
+    }
+    public void setStr_time(String str_time){
+        this.str_time = str_time;
     }
 
     public TmpRoom(double startLat, double startLon, double endLat, double endLon, String startSpot, String endSpot, int peopleWith, Date time, int way) {
