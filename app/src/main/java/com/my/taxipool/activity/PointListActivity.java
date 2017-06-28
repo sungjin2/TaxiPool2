@@ -41,7 +41,8 @@ public class PointListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pointrecord);
-        info_id = Set.Load(getApplication(), "info_id", null);
+        //info_id = Set.Load(getApplication(), "info_id", null);
+        info_id = "447433869";
         data = new ArrayList<>();
 
 
@@ -83,8 +84,9 @@ public class PointListActivity extends AppCompatActivity {
                         int type = Integer.parseInt(s_type);
 
                         //
+                        Long l_point = Long.parseLong(result.getJSONObject(i).getString("point"));
                         DecimalFormat Comma = new DecimalFormat("#,###");
-                        String c_point = Comma.format(result.getJSONObject(i).getString("point"));
+                        String c_point = Comma.format(l_point);
 
                         data.add(
                                 new PointRecordInfo(
@@ -92,7 +94,7 @@ public class PointListActivity extends AppCompatActivity {
                         );
                     }
 
-                    lecyclerView.setAdapter(new PointRecordAdapter(data, R.layout.view_point_list_info));
+                    lecyclerView.setAdapter(new PointRecordAdapter(data, R.layout.view_point_list_info,PointListActivity.this));
                     lecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                     lecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -104,7 +106,7 @@ public class PointListActivity extends AppCompatActivity {
 
             @Override
             public void onFailed(Error error) {
-                Log.i("BlockActivity", "LIST 조회 실패");
+                Log.i("PointListActivity", "LIST 조회 실패");
             }
         }).addParam("info_id", "447433869").start();
     }
