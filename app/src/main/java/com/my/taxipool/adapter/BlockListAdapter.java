@@ -111,7 +111,7 @@ public class BlockListAdapter extends BaseAdapter {
                 //AlertDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(cont);
                 builder.setTitle("정말로");
-                builder.setMessage(listviewitem.getBlockNickname()+"님을 차단하시겠습니까?");
+                builder.setMessage(listviewitem.getBlockNickname()+"님을 차단해제하시겠습니까?");
 
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override

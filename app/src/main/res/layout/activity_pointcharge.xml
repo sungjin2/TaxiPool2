@@ -24,7 +24,7 @@
             android:id="@+id/tv_nowpoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="30,000원"
+            android:text=""
             android:textColor="@color/white"
             android:textSize="30dp"
             android:layout_marginBottom="20dp"/>
@@ -37,6 +37,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.my.taxipool.util.ClearEditText
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:hint="이게되냐?"/>
         <EditText
             android:id="@+id/et_inputpoint"
             android:layout_width="match_parent"
@@ -87,6 +91,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:text="무료 포인트 충전하기(광고)"/>
+        <Button
+            android:id="@+id/bt_pointout"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button90"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="포인트 출금하기"/>
 
     </LinearLayout>
     <RelativeLayout
