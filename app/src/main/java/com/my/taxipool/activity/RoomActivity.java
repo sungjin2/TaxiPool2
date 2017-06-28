@@ -48,7 +48,7 @@ public class RoomActivity extends AppCompatActivity
 
     //status
     int state;
-    int info_id;
+    String info_id;
     static public int room_no;
 
     //items
@@ -59,7 +59,7 @@ public class RoomActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        info_id = Set.Load(RoomActivity.this,"info_id",135425414);
+        info_id = Set.Load(RoomActivity.this,"info_id",null);
         room_no = Set.Load(RoomActivity.this,"room_no",-1);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_room);
@@ -96,7 +96,7 @@ public class RoomActivity extends AppCompatActivity
         /*set ViewPager*/
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
         TabInfo tabInfo = new TabInfo();
-        tabInfo.setData(info_id, room, sharePeopleList);
+        tabInfo.setData(Integer.parseInt(info_id), room, sharePeopleList);
         adapter.addFragment(tabInfo, "합승정보");
         if (state >= 20){
             TabChat tabChat = new TabChat();
@@ -130,8 +130,8 @@ public class RoomActivity extends AppCompatActivity
                         room = new Room(roomInfoObject.getInt("room_no"), roomInfoObject.getString("admin_id"), roomInfoObject.getInt("max_cnt"),
                                 roomInfoObject.getString("payment"), roomInfoObject.getString("room_gender"), roomInfoObject.getString("alcohol"),
                                 roomInfoObject.getString("start_spot"), roomInfoObject.getString("end_spot"),
-                                roomInfoObject.getString("start_x"), roomInfoObject.getString("start_y"),
-                                roomInfoObject.getString("end_x"), roomInfoObject.getString("end_y"),
+                                roomInfoObject.getString("start_lon"), roomInfoObject.getString("start_lat"),
+                                roomInfoObject.getString("end_lon"), roomInfoObject.getString("end_lat"),
                                 new Date(), roomInfoObject.getString("room_state"), roomInfoObject.getInt("current_cnt"));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -163,7 +163,7 @@ public class RoomActivity extends AppCompatActivity
                             customerInfo.setNickname(roomInfoObject.getJSONObject(i).getString("nickname"));
                             customerInfo.setProfile_pic(roomInfoObject.getJSONObject(i).getString("profile_pic"));
 
-                            if(info_id == (roomInfoObject.getJSONObject(i).getInt("share_info_id"))){
+                            if(info_id.equals(roomInfoObject.getJSONObject(i).getString("share_info_id"))){
                                 customerInfo.setState("m");
                             }else{
                                 customerInfo.setState(roomInfoObject.getJSONObject(i).getString("state"));
@@ -212,7 +212,7 @@ public class RoomActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_leaveroom) {
             Set.Delete(RoomActivity.this,"room_no");
-            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+            Intent intent = new Intent(getApplicationContext(),HomeActivity2.class);
             ActivityCompat.finishAffinity(this); //모든 액티비티 종료
             startActivity(intent);
             return true;
