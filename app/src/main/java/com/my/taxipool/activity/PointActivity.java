@@ -76,7 +76,7 @@ public class PointActivity extends AppCompatActivity {
 
         //현재 로그인한 사람의 POINT를 조회.
         //new CommuServer("http://13.124.132.30:8888/taxi_db_test2/pointcheck.do", new CommuServer.OnCommuListener() {
-        new CommuServer("http://192.168.12.30:8888/taxi_db_test2/pointcheck.do", new CommuServer.OnCommuListener() {
+        new CommuServer(CommuServer.SELECT_BOCKLIST, new CommuServer.OnCommuListener() {
 
             @Override
             public void onSuccess(JSONObject object, JSONArray arr, String str) {

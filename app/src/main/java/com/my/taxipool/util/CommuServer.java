@@ -35,6 +35,8 @@ public class CommuServer extends AsyncTask<String,Void,Message> {
     public static final String SELECT_BY_INFOID = ROOT_URL+"selectbyid.do";
     public static final String UPDATE_ADDSCORE = ROOT_URL+"updatescore.do";
     public static final String INSERT_ADDBLOCKLIST = ROOT_URL+"addblocklist.do";
+    public static final String POINT_CHECK = ROOT_URL+"pointcheck.do";
+    public static final String POINT_RECORD = ROOT_URL+"pointrecord.do";
 
     protected String url=ROOT_URL;
     protected String query = "";
