@@ -90,20 +90,19 @@ public class HomeActivity2 extends AppCompatActivity
 
     //For Input Views
     private LinearLayout layout_inputs;
-    private InputCustomView view_spot_from;
-    private InputCustomView view_spot_to;
-    private InputCustomView view_time;
-
-//    private Button btn_place_auto;
+    private InputCustomView
+            view_spot_from,
+            view_spot_to,
+            view_time;
     private Button btn_home;
 
     private  Boolean flag_fromto = false;
 
     //For Hamburger Views
     private ImageView img_nav_info;
-    private TextView tv_nav_infoname;
-    private TextView tv_nav_info_nickandphone;
+    private TextView tv_nav_infoname, tv_nav_info_nickandphone;
     private Bitmap bitmap;
+    private Button bt_point;
 
     // Marker and Map
     MarkerOptions markeropt_start;
@@ -114,8 +113,8 @@ public class HomeActivity2 extends AppCompatActivity
     ImageView img_marker;
     TextView tv_home_indicator;
 
-    private TextView tv_spotname;       //Marker's textview
     private LinearLayout view_point;    //Marker
+    private TextView tv_spotname;       //Marker's textview
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
 
@@ -124,7 +123,10 @@ public class HomeActivity2 extends AppCompatActivity
     private static final int PLACE_AUTOCOMPLETE_TO = 0;
     private static final int PLACE_AUTOCOMPLETE_FROM = 1;
 
-    long time;
+    //Hidden View
+    private LinearLayout layout_hidden_spot;
+    private InputCustomView view_hidden_start_spot, view_hidden_end_spot;
+    private Button btn_hidden;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,23 +203,30 @@ public class HomeActivity2 extends AppCompatActivity
         img_nav_info = (ImageView) headerLayout.findViewById(R.id.img_nav_info);
         tv_nav_infoname = (TextView) headerLayout.findViewById(R.id.tv_nav_infoname);
         tv_nav_info_nickandphone = (TextView) headerLayout.findViewById(R.id.tv_nav_info_nickandphone);
+        bt_point = (Button) headerLayout.findViewById(R.id.bt_point);
 
         //Marker
-        view_point = (LinearLayout) findViewById(R.id.view_point);                              //전체
+        view_point = (LinearLayout) findViewById(R.id.view_point2);                              //전체
         layout_home_indicator = (LinearLayout) findViewById(R.id.layout_home_indicator);    //말풍선
         img_marker = (ImageView) findViewById(R.id.ic_place);
         tv_spotname = (TextView) findViewById(R.id.tv_spotname);
         tv_home_indicator  = (TextView) findViewById(R.id.tv_home_indicator);
+
+        //Hidden Views
+        layout_hidden_spot = (LinearLayout) findViewById(R.id.layout_hidden_spot);
+        view_hidden_end_spot = (InputCustomView) findViewById(R.id.view_hidden_end_spot);
+        view_hidden_start_spot = (InputCustomView) findViewById(R.id.view_hidden_start_spot);
+        btn_hidden = (Button) findViewById(R.id.btn_hidden);
     }
 
     private void setViews() {
-        layout_home_indicator.post(new Runnable() {
+        view_point.post(new Runnable() {
             @Override
             public void run() {
-                int height = layout_home_indicator.getHeight();
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(img_marker.getLayoutParams());
-                lp.setMargins(0, 0, 0, height);
-                img_marker.setLayoutParams(lp);
+            int height = view_point.getHeight();
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(img_marker.getLayoutParams());
+            lp.setMargins(0, 0, 0, height /2 );
+            img_marker.setLayoutParams(lp);
             }
         }); //spot 가운데로 margin 설정
 
@@ -238,6 +247,10 @@ public class HomeActivity2 extends AppCompatActivity
         btn_home.setOnClickListener(basic_click_listener);
         layout_home_indicator.setOnClickListener(basic_click_listener);
 
+        view_hidden_start_spot.setOnClickListener(basic_click_listener);
+        view_hidden_end_spot.setOnClickListener(basic_click_listener);
+        btn_hidden.setOnClickListener(basic_click_listener);
+        bt_point.setOnClickListener(basic_click_listener);
     }
 
     @Override
@@ -259,7 +272,7 @@ public class HomeActivity2 extends AppCompatActivity
         btn_right.setOnClickListener(new View.OnClickListener(){
               @Override
               public void onClick(View v) {
-                  openAutocompleteActivity(flag_fromto);
+              openAutocompleteActivity(flag_fromto);
               }
           }
         );
@@ -385,6 +398,8 @@ public class HomeActivity2 extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         }else if(layout_inputs.getVisibility() == View.GONE){
             showInputs(true);
+        }else if(layout_inputs.getVisibility() == View.VISIBLE){
+            showInputs(false);
         }else{
             super.onBackPressed();
         }
@@ -443,17 +458,12 @@ public class HomeActivity2 extends AppCompatActivity
         public void onClick(View v) {
             int id = v.getId();
             showInputs(false);
-            Log.d("ddu","click");
             switch (id) {
                 case R.id.view_spot_from:
-                    Log.d("ddu","from click");
                     tv_home_indicator.setText("이 위치로 출발지 설정");
-                    tv_home_indicator.setTextColor(getResources().getColor(R.color.colorPink));
                     break;
                 case R.id.view_spot_to:
-                    Log.d("ddu","to click");
                     tv_home_indicator.setText("이 위치로 도착지 설정");
-                    tv_home_indicator.setTextColor(getResources().getColor(R.color.colorDart));
                     break;
             }
         }
@@ -462,14 +472,12 @@ public class HomeActivity2 extends AppCompatActivity
     public View.OnClickListener basic_click_listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Intent intent;
             switch (v.getId()) {
                 case R.id.view_time:
                     break;
-//                case R.id.btn_place_auto2:
-//                    openAutocompleteActivity(flag_fromto);
-//                    break;
                 case R.id.btn_home:
-                    Intent intent = new Intent(HomeActivity2.this,RoomListActivity.class);
+                    intent = new Intent(HomeActivity2.this,RoomListActivity.class);
                     intent.putExtra("object",tmpRoom);
                     startActivity(intent);
                     break;
@@ -477,7 +485,8 @@ public class HomeActivity2 extends AppCompatActivity
                     LatLng latLng = googleMap.getCameraPosition().target;
                     if(!flag_fromto){   //출발지 설정
                         flag_fromto = true;
-                        view_spot_from.setRightLabel(tv_spotname.getText().toString());
+                        view_hidden_start_spot.setRightLabel(tv_spotname.getText().toString());
+
                         tmpRoom.setStartSpot(tv_spotname.getText().toString());
                         tmpRoom.setStartLat(latLng.latitude);
                         tmpRoom.setStartLon(latLng.longitude);
@@ -488,7 +497,7 @@ public class HomeActivity2 extends AppCompatActivity
                         hashMapMarker.put("start",markeropt_start);
                     }else {
                         flag_fromto = false;
-                        view_spot_to.setRightLabel(tv_spotname.getText().toString());
+                        view_hidden_end_spot.setRightLabel(tv_spotname.getText().toString());
 
                         tmpRoom.setEndSpot(tv_spotname.getText().toString());
                         tmpRoom.setEndLat(latLng.latitude);
@@ -499,9 +508,25 @@ public class HomeActivity2 extends AppCompatActivity
                                 .snippet(tv_spotname.getText().toString());
                         hashMapMarker.put("end",markeropt_end);
                     }
-                    googleMap.clear();
                     refreshMarkers();
-                    showInputs(true);
+                    break;
+                case R.id.view_hidden_start_spot:
+                    tv_home_indicator.setText("이 위치로 출발지 설정");
+                    flag_fromto = false;
+                    break;
+                case R.id.view_hidden_end_spot:
+                    tv_home_indicator.setText("이 위치로 도착지 설정");
+                    flag_fromto = true  ;
+                    break;
+                case R.id.btn_hidden:
+                        view_spot_from.setRightLabel(view_hidden_start_spot.getRightLabel());
+                        view_spot_to.setRightLabel(view_hidden_end_spot.getRightLabel());
+                        showInputs(true);
+                    break;
+
+                case R.id.bt_point:
+                    intent = new Intent(HomeActivity2.this,PointActivity.class);
+                    startActivity(intent);
                     break;
             }
         }
@@ -512,25 +537,39 @@ public class HomeActivity2 extends AppCompatActivity
     private void showInputs(boolean flag){
         //true = VISIBLE, false = GONE
         if(flag){
-            layout_inputs.setVisibility(View.VISIBLE);
-            view_point.setVisibility(View.GONE);
+            layout_inputs.setTranslationY(layout_inputs.getHeight());
+            layout_inputs.setVisibility(View.GONE);
+            layout_inputs.animate()
+                    .translationYBy(-layout_inputs.getHeight())
+                    .setDuration(500)
+                    .setStartDelay(400)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(final Animator animation) {
+                            layout_inputs.setVisibility(View.VISIBLE);
+                            view_point.setVisibility(View.GONE);
+                            layout_hidden_spot.setVisibility(View.GONE);
+                        }
+                    })
+                    .start();
         }else{
             layout_inputs.animate()
                     .translationY(layout_inputs.getHeight())
-                    .alpha(0.0f)
-                    .setDuration(300)
+                    .setDuration(400)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             layout_inputs.setVisibility(View.GONE);
+                            view_point.setVisibility(View.VISIBLE);
+                            layout_hidden_spot.setVisibility(View.VISIBLE);
                         }
                     });
-            view_point.setVisibility(View.VISIBLE);
         }
     }
 
     private void refreshMarkers(){
+        googleMap.clear();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         boolean flag_start = false;
         boolean flag_end = false;
