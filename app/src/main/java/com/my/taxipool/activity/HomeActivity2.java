@@ -319,11 +319,14 @@ public class HomeActivity2 extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Intent intent;
         switch (id) {
             case R.id.nav_sub_boardlist:
+                intent = new Intent(HomeActivity2.this, RoomRecordActiviy.class);
+                startActivity(intent);
                 break;
             case R.id.nav_sub_blocklist:
-                Intent intent = new Intent(HomeActivity2.this, BlockActivity.class);
+                intent = new Intent(HomeActivity2.this, BlockActivity.class);
                 startActivity(intent);
                 break;
         }

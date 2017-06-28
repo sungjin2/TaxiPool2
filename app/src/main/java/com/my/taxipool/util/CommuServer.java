@@ -23,8 +23,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class CommuServer extends AsyncTask<String,Void,Message> {
-//    public static final String ROOT_URL="http://192.168.12.30:8888/taxi_db_test2/";
-    public static final String ROOT_URL="http://13.124.132.118:8080/taxi_db_test2/";
+    public static final String ROOT_URL="http://192.168.12.30:8888/taxi_db_test2/";
+//    public static final String ROOT_URL="http://13.124.132.118:8080/taxi_db_test2/";
     public static final String SELECT_ROOM_LIST = ROOT_URL+"roomlist.do";
     public static final String SELECT_ROOM_INFO = ROOT_URL+"roominfo.do";
     public static final String REGIST_ROOM = ROOT_URL+"registroom.do";
@@ -37,6 +37,8 @@ public class CommuServer extends AsyncTask<String,Void,Message> {
     public static final String INSERT_ADDBLOCKLIST = ROOT_URL+"addblocklist.do";
     public static final String POINT_CHECK = ROOT_URL+"pointcheck.do";
     public static final String POINT_RECORD = ROOT_URL+"pointrecord.do";
+    public static final String POINT_CHARGE = ROOT_URL+"pointcharge.do";
+    public static final String SELECT_SHARE_LIST = ROOT_URL+"sharelist.do";
 
     protected String url=ROOT_URL;
     protected String query = "";

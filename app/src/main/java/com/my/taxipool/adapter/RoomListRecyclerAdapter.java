@@ -60,7 +60,6 @@ public class RoomListRecyclerAdapter extends RecyclerView.Adapter<RoomListRecycl
             img_roomlist_alcohol= (ImageView) itemView.findViewById(R.id.img_roomlist_alcohol);
             img_roomlist_payment= (ImageView) itemView.findViewById(R.id.img_roomlist_payment);
             img_roomlist_gender= (ImageView) itemView.findViewById(R.id.img_roomlist_gender);
-
         }
     }
 
@@ -73,8 +72,6 @@ public class RoomListRecyclerAdapter extends RecyclerView.Adapter<RoomListRecycl
     //넘겨받은 데이터를 화면에 출력하는 역할
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        //holder.start_spot.setText(labels.get(position));
-
         holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,24 +85,6 @@ public class RoomListRecyclerAdapter extends RecyclerView.Adapter<RoomListRecycl
         holder.cnt.setText(String.valueOf(rooms.get(position).getMax_cnt()));
         holder.current_cnt.setText(String.valueOf(rooms.get(position).getCurrent_cnt()));
 
-//        //남녀방 구분
-//        if(rooms.get(position).getRoom_gender().equals("f")){
-//            holder.img_roomlist_gender.setImageResource(R.drawable.ic_female_24dp);
-//        }else{
-//            holder.img_roomlist_gender.setImageResource(R.drawable.ic_male_24dp);
-//        }
-//        //결제방법
-//        if(rooms.get(position).getPayment().equals("p")){
-//            holder.img_roomlist_payment.setImageResource(R.drawable.ic_point_24dp);
-//        }else{ //cash인경우
-//            holder.img_roomlist_payment.setImageResource(R.drawable.ic_cash_24dp);
-//        }
-//        //음주여부
-//        if(rooms.get(position).equals("y")){
-//            holder.img_roomlist_alcohol.setImageResource(R.drawable.ic_local_drink_24dp);
-//        }else{
-//            holder.img_roomlist_alcohol.setImageResource(R.drawable.ic_none_24dp);
-//        }
         holder.img_roomlist_gender.setImageResource(rooms.get(position).getImgsource_gender());
         holder.img_roomlist_payment.setImageResource(rooms.get(position).getImgsource_payment());
         holder.img_roomlist_alcohol.setImageResource(rooms.get(position).getImgsource_alcohol());
