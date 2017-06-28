@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class PointListActivity extends AppCompatActivity {
 
     private void initData() {
 
-        new CommuServer("http://192.168.12.30:8888/taxi_db_test2/pointrecord.do", new CommuServer.OnCommuListener() {
+        new CommuServer(CommuServer.POINT_RECORD, new CommuServer.OnCommuListener() {
             @Override
 
             public void onSuccess(JSONObject object, JSONArray arr, String str) {
@@ -70,28 +71,24 @@ public class PointListActivity extends AppCompatActivity {
                 result = arr;
                 try {
                     for (int i = 0; i < result.length(); i++) {
-                        Log.d("PointListActivity", "for문에 왔씁니다..");
 
+                        //String to Date
                         String s_date = result.getJSONObject(i).getString("date");
                         long l_date = Long.parseLong(s_date);
                         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        Log.d("PointListActivity1",s_date +" "+result.getJSONObject(i).getString("point"));
-
-                        //Date date = transFormat.parse(s_date);
                         Date date = new Date(l_date);
-                        String a = transFormat.format(date);
-                        Log.d("PointListActivity233", " "+a);
-                        Log.d("PointListActivity2", " "+date);
 
+                        //String to Integer
                         String s_type = result.getJSONObject(i).getString("type");
-                        Log.d("PointListActivity4", " "+s_type);
                         int type = Integer.parseInt(s_type);
-                        Log.d("PointListActivity5"," "+type);
 
+                        //
+                        DecimalFormat Comma = new DecimalFormat("#,###");
+                        String c_point = Comma.format(result.getJSONObject(i).getString("point"));
 
                         data.add(
                                 new PointRecordInfo(
-                                        info_id, result.getJSONObject(i).getString("point"), date, type)
+                                        info_id, c_point, date, type)
                         );
                     }
 
@@ -102,9 +99,7 @@ public class PointListActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     Log.d("PointListActivity", "JSONException");
                     e.printStackTrace();
-                } /*catch (ParseException e) {
-                    Log.d("PointListActivity", "String to Date 에러!");
-                }*/
+                }
             }
 
             @Override
@@ -112,23 +107,5 @@ public class PointListActivity extends AppCompatActivity {
                 Log.i("BlockActivity", "LIST 조회 실패");
             }
         }).addParam("info_id", "447433869").start();
-
-
-
     }
 }
-
-/*for (int i = 0; i < ) {;
-            PointRecordInfo pointRecordInfo = new PointRecordInfo();
-            pointRecordInfo.setPoint((i + 1) * 100);
-            pointRecordInfo.setDate(date);
-            if (i % 2 == 0) {
-                pointRecordInfo.setType(-1);
-            } else {
-                pointRecordInfo.setType(1);
-            }
-            pointlist.add(pointRecordInfo);
-            Log.d("PointListActivity test", pointlist.toString());
-
-        }*/
-

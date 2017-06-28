@@ -1,6 +1,5 @@
 package com.my.taxipool.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,17 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-
-//import com.my.taxipool.adapter.RecyclerViewAdapterInterface;
-//import com.my.taxipool.network.Network;
 
 /**
  * Created by sungjin on 2017-06-20.
@@ -37,29 +26,27 @@ public class BlockActivity extends AppCompatActivity{
     BlockListAdapter adapter;
     ArrayList<BlockCustomerInfo> data;
     ListView listView;
-    String json_result = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final String info_id = Set.Load(getApplicationContext(), "info_id", null);
-        Log.d("BlockActivity", "info_id"+info_id);
         setContentView(R.layout.activity_blocklist);
 
-        //ListView
-        listView=(ListView)findViewById(R.id.listview);
-
+        final String info_id = Set.Load(getApplicationContext(), "info_id", null);
         data = new ArrayList<>();
 
-        new CommuServer(CommuServer.SELECT_BOCKLIST, new CommuServer.OnCommuListener() {
+        listView=(ListView)findViewById(R.id.listview);
+
+        new CommuServer(CommuServer.POINT_CHECK, new CommuServer.OnCommuListener() {
+
             @Override
             public void onSuccess(JSONObject object, JSONArray arr, String str) {
 
-                Log.i("BlockActivity", "LIST 조회 성공");
-                Log.d("ddu result!!",arr.toString());
                 result = arr;
+
                 try{
                     for(int i=0; i<result.length(); i++){
+
                         /* 변수명 주의! JSON의 결과로 오는 것의 INFO_ID는 BLACKLIST_ID(NICKNAME, PROFILE도 마찬가지다) */
                         Log.d("BlockActivity ArrayList",new BlockCustomerInfo(info_id, result.getJSONObject(i).getString("info_id"),
                                 result.getJSONObject(i).getString("nickname"), result.getJSONObject(i).getString("profile_pic")).toString());
@@ -67,7 +54,6 @@ public class BlockActivity extends AppCompatActivity{
                                 new BlockCustomerInfo(
                                         info_id, result.getJSONObject(i).getString("info_id"), result.getJSONObject(i).getString("nickname"), result.getJSONObject(i).getString("profile_pic"))
                         );
-                        //Log.d("ddu",nickname+" "+info_id);
                     }
                     adapter = new  BlockListAdapter(BlockActivity.this, R.layout.view_list_people_info,data);
                     listView.setAdapter(adapter);
@@ -84,16 +70,16 @@ public class BlockActivity extends AppCompatActivity{
         }).addParam("info_id", info_id).start();
     }
 
+    /*
     public void refresh(){
-        Log.d("BlcokActivity>refresh","옴");
+        Log.d("BlcokActivity","refresh() 메소드 호출");
         Intent intent = new Intent(BlockActivity.this, BlockActivity.class);
         startActivity(intent);
         finish();
-
-        //이거 인터넷이랑 연결되는거면 안된다고함.
-        //adapter.notifyDataSetChanged();
     }
+    */
 
+    /*
     public JSONArray jsonArrayNetwork(String str_url,String query){
         URL url;
         HttpURLConnection conn;
@@ -144,11 +130,10 @@ public class BlockActivity extends AppCompatActivity{
                     break;
             }
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
         }
+        */
 }
