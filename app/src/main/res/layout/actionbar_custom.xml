@@ -19,12 +19,13 @@
         android:textColor="@color/black"
         android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="56dp" />
+        android:layout_height="56dp"
+        android:layout_marginRight="50dp"/>
 
     <RelativeLayout
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:padding="15dp"
+        android:padding="10dp"
         android:layout_alignParentRight="true">
         <ImageButton
             android:id="@+id/btn_right"

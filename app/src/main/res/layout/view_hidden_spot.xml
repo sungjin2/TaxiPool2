@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00ffffff">
+    <LinearLayout
+        android:id="@+id/view_point2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        android:elevation="1dp">
+
+        <LinearLayout
+            android:id="@+id/layout_home_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spot_rounded_corner"
+            android:orientation="vertical"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/tv_home_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="위치"
+                android:textColor="@color/colorPink" />
+            <TextView
+                android:id="@+id/tv_spotname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="location" />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/ic_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@mipmap/ic_pin" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout_hidden_spot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="15dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.my.taxipool.view.InputCustomView
+            android:id="@+id/view_hidden_start_spot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:leftLabel="출발지"
+            app:rightColor="@color/black"
+            app:rightLabel="settings" />
+
+        <com.my.taxipool.view.InputCustomView
+            android:id="@+id/view_hidden_end_spot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:leftLabel="도착지"
+            app:rightLabel="settings"
+            app:rightColor="@color/black"/>
+
+        <Button
+            android:id="@+id/btn_hidden"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/selector_drawable_click"
+            android:textColor="@color/white"
+            android:text="현재위치로 선택하기"
+            />
+    </LinearLayout>
+</RelativeLayout>
