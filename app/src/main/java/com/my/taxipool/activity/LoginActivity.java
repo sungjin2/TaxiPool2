@@ -88,7 +88,6 @@ public class LoginActivity extends AppCompatActivity {
         else if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
-
     }
 
     private void requestSignUp() {
@@ -201,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                 profile_pic = userProfile.getNickname();
                 Set.Save(getApplicationContext(), "info_id", info_id);
 
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HomeActivity2.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 Toast.makeText(getApplicationContext(), "간편로그인으로 접속하였습니다", Toast.LENGTH_SHORT).show();
@@ -303,7 +302,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }.start();
 
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        Intent intent = new Intent(LoginActivity.this, HomeActivity2.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
