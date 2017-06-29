@@ -86,7 +86,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         //지도준비 -> onMapReady() 자동호출
 
         info_id = Set.Load(RoomRegistActivity.this,"info_id",null);
-        info_id = "135425414";
         setViewIds();
         setViews();
 
