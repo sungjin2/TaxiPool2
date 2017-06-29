@@ -10,8 +10,17 @@ public class CustomerInfo {
     String info_name;
     String nickname;
     String info_gender;
+    int point;
     double resultscore;
     String state;
+
+    public int getPoint() {
+        return point;
+    }
+
+    public void setPoint(int point) {
+        this.point = point;
+    }
 
     public double getResultscore() {
         return resultscore;

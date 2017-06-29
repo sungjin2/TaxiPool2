@@ -164,10 +164,10 @@ public class TabInfo extends Fragment{
                 public void onMapReady(final GoogleMap map) {
                     MarkerOptions startMarkerOption = new MarkerOptions();
                     MarkerOptions endMarkerOption = new MarkerOptions();
-                    LatLng start_latlon = new LatLng(Double.parseDouble(room.getStart_lon()), Double.parseDouble(room.getStart_lat()));
-                    LatLng end_latlon = new LatLng(Double.parseDouble(room.getEnd_lon()), Double.parseDouble(room.getStart_lat()));
-                    LatLng cneter_latlon = new LatLng((Double.parseDouble(room.getStart_lon()) + Double.parseDouble(room.getEnd_lon())) / 2,
-                            (Double.parseDouble(room.getStart_lat()) + Double.parseDouble(room.getStart_lat())) / 2);
+                    LatLng start_latlon = new LatLng(room.getStart_lon(), room.getStart_lat());
+                    LatLng end_latlon = new LatLng(room.getEnd_lon(), room.getStart_lat());
+                    LatLng cneter_latlon = new LatLng((room.getStart_lon() + room.getEnd_lon()) / 2,
+                            (room.getStart_lat() + room.getStart_lat()) / 2);
 
                     startMarkerOption.position(start_latlon);
                     startMarkerOption.title("출발지");

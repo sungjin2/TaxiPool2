@@ -41,7 +41,6 @@ import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.Room;
-import com.my.taxipool.vo.TmpRoom;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,7 +74,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     private int room_no;
     private Date time;
     private  String strstart_time;
-    TmpRoom tmpRoom;
     Room room;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -88,7 +86,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         //지도준비 -> onMapReady() 자동호출
 
         info_id = Set.Load(RoomRegistActivity.this,"info_id",null);
-        info_id = "135425414";
         setViewIds();
         setViews();
 
@@ -117,7 +114,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
         spin_regist_peoplenum = (Spinner)findViewById(R.id.spin_regist_peoplenum);
         tv_regist_time = (TextView)findViewById(R.id.tv_regist_time);
-        tmpRoom = (TmpRoom) getIntent().getSerializableExtra("object");
+        room = (Room) getIntent().getSerializableExtra("object");
     }
 
     public void setViews(){
@@ -135,10 +132,10 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
             });
         }
 
-        tv_regist_start_spot.setText(tmpRoom.getStartSpot());
-        tv_regist_end_spot.setText(tmpRoom.getEndSpot());
-        tv_regist_time.setText(tmpRoom.getStr_time());
-        time = tmpRoom.getTime();
+        tv_regist_start_spot.setText(room.getStart_spot());
+        tv_regist_end_spot.setText(room.getEnd_spot());
+        tv_regist_time.setText(room.getStr_Start_time());
+        time = room.getStart_time();
         strstart_time = transFormat.format(time);
         tv_regist_time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +175,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                         spin_regist_peoplenum.getSelectedItemPosition()+1,
                         pay,gender,can_alcohol,tv_regist_start_spot.getText().toString(),
                         tv_regist_end_spot.getText().toString(),
-                        String.valueOf(tmpRoom.getStartLat()),String.valueOf(tmpRoom.getStartLon()),
-                        String.valueOf(tmpRoom.getEndLat()),String.valueOf(tmpRoom.getEndLon()),
+                        room.getStart_lat(),room.getStart_lon(),
+                        room.getEnd_lat(),room.getEnd_lon(),
                         time, "a");
 
                 //AlertDialog
@@ -303,8 +300,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(final GoogleMap googleMap) {
         startMarkerOption = new MarkerOptions();
         endMarkerOption = new MarkerOptions();
-        LatLng start_latlon = new LatLng(tmpRoom.getStartLat(), tmpRoom.getStartLon());
-        LatLng end_latlon = new LatLng(tmpRoom.getEndLat(), tmpRoom.getEndLon());
+        LatLng start_latlon = new LatLng(room.getStart_lat(), room.getStart_lon());
+        LatLng end_latlon = new LatLng(room.getEnd_lat(), room.getEnd_lon());
 
         ImageResourceUtil util = new ImageResourceUtil();
         Bitmap bitmap_icon = util.getBitmap(RoomRegistActivity.this,R.drawable.ic_place_yellow_24dp);
@@ -312,11 +309,11 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
         startMarkerOption.position(start_latlon)
             .title("출발지")
-            .snippet(tmpRoom.getStartSpot())
+            .snippet(room.getStart_spot())
             .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
         endMarkerOption.position(end_latlon)
             .title("도착지")
-            .snippet(tmpRoom.getEndSpot())
+            .snippet(room.getEnd_spot())
             .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
 
         googleMap.addMarker(startMarkerOption);

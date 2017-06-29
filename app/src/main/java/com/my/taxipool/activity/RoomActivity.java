@@ -130,8 +130,8 @@ public class RoomActivity extends AppCompatActivity
                         room = new Room(roomInfoObject.getInt("room_no"), roomInfoObject.getString("admin_id"), roomInfoObject.getInt("max_cnt"),
                                 roomInfoObject.getString("payment"), roomInfoObject.getString("room_gender"), roomInfoObject.getString("alcohol"),
                                 roomInfoObject.getString("start_spot"), roomInfoObject.getString("end_spot"),
-                                roomInfoObject.getString("start_lon"), roomInfoObject.getString("start_lat"),
-                                roomInfoObject.getString("end_lon"), roomInfoObject.getString("end_lat"),
+                                roomInfoObject.getDouble("start_lon"), roomInfoObject.getDouble("start_lat"),
+                                roomInfoObject.getDouble("end_lon"), roomInfoObject.getDouble("end_lat"),
                                 new Date(), roomInfoObject.getString("room_state"), roomInfoObject.getInt("current_cnt"));
                     } catch (JSONException e) {
                         e.printStackTrace();
