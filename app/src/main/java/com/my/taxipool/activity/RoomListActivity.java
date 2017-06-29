@@ -15,7 +15,6 @@ import com.my.taxipool.adapter.RoomListRecyclerAdapter;
 import com.my.taxipool.adapter.RoomListRecyclerAdapterInterface;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.vo.Room;
-import com.my.taxipool.vo.TmpRoom;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,14 +40,14 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     private String alcohol;
     private String start_spot;
     private String end_spot;
-    private String start_lon;
-    private String start_lat;
-    private String end_lon;
-    private String end_lat;
+    private double start_lon;
+    private double start_lat;
+    private double end_lon;
+    private double end_lat;
     private Date start_time;
     private String room_state;
     private int current_cnt;
-    TmpRoom tmpRoom ;
+    Room room ;
 
     private TextView tv_myStartTime;
     private TextView tv_myStartSpot;
@@ -60,8 +59,8 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roomlist);
 
-        tmpRoom = (TmpRoom) getIntent().getSerializableExtra("object");
-        Log.d("ddu tmpRoom",tmpRoom.toString());
+        room = (Room) getIntent().getSerializableExtra("object");
+        Log.d("ddu tmpRoom",room.toString());
         setViewIds();
         setViews();
         new CommuServer(CommuServer.SELECT_ROOM_LIST, new CommuServer.OnCommuListener() {
@@ -81,10 +80,10 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
                         alcohol = jsonobject.getString("alcohol");
                         start_spot = jsonobject.getString("start_spot");
                         end_spot = jsonobject.getString("end_spot");
-                        start_lon = jsonobject.getString("start_lon");
-                        start_lat = jsonobject.getString("start_lat");
-                        end_lon = jsonobject.getString("end_lon");
-                        end_lat = jsonobject.getString("end_lat");
+                        start_lon = jsonobject.getDouble("start_lon");
+                        start_lat = jsonobject.getDouble("start_lat");
+                        end_lon = jsonobject.getDouble("end_lon");
+                        end_lat = jsonobject.getDouble("end_lat");
                         String start_time_string = jsonobject.getString("start_time");
                         start_time = sdf.parse(start_time_string, new ParsePosition(0));
                         room_state = jsonobject.getString("room_state");
@@ -102,10 +101,10 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
             @Override
             public void onFailed(Error error) {
             }
-        }).addParam("start_lat", tmpRoom.getStartLat())
-                .addParam("start_lon", tmpRoom.getStartLon())
-                .addParam("start_lat", tmpRoom.getEndLat())
-                .addParam("end_lon", tmpRoom.getEndLon()).start();
+        }).addParam("start_lat", room.getStart_lat())
+                .addParam("start_lon", room.getStart_lon())
+                .addParam("start_lat", room.getEnd_lat())
+                .addParam("end_lon", room.getEnd_lon()).start();
 //    }).addParam("start_lon", tmpRoom.getStartLat())
 //            .addParam("start_lat", tmpRoom.getStartLon())
 //            .addParam("start_lon", tmpRoom.getEndLat())
@@ -120,14 +119,14 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
         btn_goto_makeroom = (Button) findViewById(R.id.btn_goto_makeroom);
     }
     private void setViews() {
-        tv_myEndSpot.setText(tmpRoom.getEndSpot());
-        tv_myStartSpot.setText(tmpRoom.getStartSpot());
-        tv_myStartTime.setText(tmpRoom.getStr_time());
+        tv_myEndSpot.setText(room.getEnd_spot());
+        tv_myStartSpot.setText(room.getStart_spot());
+        tv_myStartTime.setText(room.getStr_Start_time());
         btn_goto_makeroom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RoomListActivity.this,RoomRegistActivity.class);
-                intent.putExtra("object",tmpRoom);
+                intent.putExtra("object",room);
                 startActivity(intent);
             }
         });

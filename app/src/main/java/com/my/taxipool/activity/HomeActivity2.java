@@ -67,7 +67,7 @@ import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.view.InputCustomView;
 import com.my.taxipool.vo.CustomerInfo;
-import com.my.taxipool.vo.TmpRoom;
+import com.my.taxipool.vo.Room;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +92,7 @@ public class HomeActivity2 extends AppCompatActivity
 
     //for data
     public static CustomerInfo myInfo;
-    private TmpRoom tmpRoom= new TmpRoom();
+    private Room room= new Room();
     private String info_id;
 
     private NavigationView navigationView;
@@ -115,7 +115,7 @@ public class HomeActivity2 extends AppCompatActivity
 
     //For Hamburger Views
     private ImageView img_nav_info;
-    private TextView tv_nav_infoname, tv_nav_info_nickandphone;
+    private TextView tv_nav_infoname, tv_nav_info_nickandphone, tv_point;
     private Bitmap bitmap;
     private Button bt_point;
 
@@ -184,6 +184,7 @@ public class HomeActivity2 extends AppCompatActivity
                         myInfo.setInfo_name(object.getString("info_name"));
                         myInfo.setNickname(object.getString("nickname"));
                         myInfo.setInfo_gender(object.getString("info_gender"));
+                        myInfo.setPoint(object.getInt("point"));
                         myInfo.setResultscore(object.getInt("score")/(double)object.getInt("cnt"));
                         Log.d("ddu HomeActivity myInfo",myInfo.toString());
                         setMyinfo();
@@ -218,7 +219,9 @@ public class HomeActivity2 extends AppCompatActivity
         img_nav_info = (ImageView) headerLayout.findViewById(R.id.img_nav_info);
         tv_nav_infoname = (TextView) headerLayout.findViewById(R.id.tv_nav_infoname);
         tv_nav_info_nickandphone = (TextView) headerLayout.findViewById(R.id.tv_nav_info_nickandphone);
+        tv_point = (TextView) headerLayout.findViewById(R.id.tv_point);
         bt_point = (Button) headerLayout.findViewById(R.id.bt_point);
+
 
         //Marker
         img_marker = (ImageView) findViewById(R.id.img_pin);
@@ -308,6 +311,7 @@ public class HomeActivity2 extends AppCompatActivity
             bitmap = ih.getRoundedCornerBitmap(bitmap,200);
             img_nav_info.setImageBitmap(bitmap);
             tv_nav_infoname.setText(myInfo.getNickname());
+            tv_point.setText(myInfo.getPoint());
             tv_nav_info_nickandphone.setText(myInfo.getInfo_name()+" / "+myInfo.getPhone_no());
         }catch(InterruptedException e) {
             e.printStackTrace();
@@ -358,10 +362,10 @@ public class HomeActivity2 extends AppCompatActivity
         markeropt_start = new MarkerOptions();
         markeropt_end = new MarkerOptions();
         markeropt_start.title("출발지")
-                .snippet(tmpRoom.getStartSpot())
+                .snippet(room.getStart_spot())
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon_from));
         markeropt_end.title("도착지")
-                .snippet(tmpRoom.getEndSpot())
+                .snippet(room.getEnd_spot())
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon_to));
 
         /* for current location */
@@ -503,31 +507,31 @@ public class HomeActivity2 extends AppCompatActivity
                     break;
                 case R.id.btn_home:
                     intent = new Intent(HomeActivity2.this,RoomListActivity.class);
-                    intent.putExtra("object",tmpRoom);
+                    intent.putExtra("object",room);
                     startActivity(intent);
                     break;
                 case R.id.btn_hidden:
                     LatLng latLng = googleMap.getCameraPosition().target;
                     if(!flag_fromto){   //출발지 설정
-                        tmpRoom.setStartSpot(view_hidden_spot.getRightLabel());
-                        tmpRoom.setStartLat(latLng.latitude);
-                        tmpRoom.setStartLon(latLng.longitude);
+                        room.setStart_spot(view_hidden_spot.getRightLabel());
+                        room.setStart_lat(latLng.latitude);
+                        room.setStart_lon(latLng.longitude);
                         markeropt_start
                                 .position(latLng)
-                                .snippet(tmpRoom.getStartSpot());
+                                .snippet(room.getStart_spot());
                         hashMapMarker.put("start",markeropt_start);
-                        view_spot_from.setRightLabel(tmpRoom.getStartSpot());
+                        view_spot_from.setRightLabel(room.getStart_spot());
                         view_spot_from.setRightColor(R.color.black);
                         issetted[0]= true;
                     }else{
-                        tmpRoom.setEndSpot(view_hidden_spot.getRightLabel());
-                        tmpRoom.setEndLat(latLng.latitude);
-                        tmpRoom.setEndLon(latLng.longitude);
+                        room.setEnd_spot(view_hidden_spot.getRightLabel());
+                        room.setEnd_lat(latLng.latitude);
+                        room.setEnd_lon(latLng.longitude);
                         markeropt_end
                                 .position(latLng)
-                                .snippet(tmpRoom.getEndSpot());
+                                .snippet(room.getEnd_spot());
                         hashMapMarker.put("end",markeropt_end);
-                        view_spot_to.setRightLabel(tmpRoom.getEndSpot());
+                        view_spot_to.setRightLabel(room.getEnd_spot());
                         view_spot_to.setRightColor(R.color.black);
                         issetted[1]= true;
                     }
@@ -725,7 +729,7 @@ public class HomeActivity2 extends AppCompatActivity
                                 view_time.setRightColor(R.color.black);
                                 String strstart_time = sdfday.format(calendar.getTimeInMillis())+" "+hourOfDay+":"+""+minute;
                                 try {
-                                    tmpRoom.setTime(transFormat.parse(strstart_time));
+                                    room.setStart_time(transFormat.parse(strstart_time));
                                 }catch (ParseException e){
 
                                 }

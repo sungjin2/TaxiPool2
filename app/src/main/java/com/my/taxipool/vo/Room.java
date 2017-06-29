@@ -2,6 +2,7 @@ package com.my.taxipool.vo;
 
 import com.my.taxipool.R;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
  * Created by KITRI on 2017-06-13.
  */
 
-public class Room  {
+public class Room implements Serializable {
     /*
      - 방번호
      - 출발지/도착지
@@ -27,10 +28,10 @@ public class Room  {
     private String alcohol;
     private String start_spot;
     private String end_spot;
-    private String start_lon;
-    private String start_lat;
-    private String end_lon;
-    private String end_lat;
+    private double start_lon;
+    private double start_lat;
+    private double end_lon;
+    private double end_lat;
     private Date start_time;
     private String room_state;
     private int current_cnt; // (해당 방에 신청 / 수락된 사람)
@@ -109,35 +110,35 @@ public class Room  {
         this.end_spot = end_spot;
     }
 
-    public String getStart_lon() {
+    public double getStart_lon() {
         return start_lon;
     }
 
-    public void setStart_lon(String start_lon) {
+    public void setStart_lon(double start_lon) {
         this.start_lon = start_lon;
     }
 
-    public String getStart_lat() {
+    public double getStart_lat() {
         return start_lat;
     }
 
-    public void setStart_lat(String start_lat) {
+    public void setStart_lat(double start_lat) {
         this.start_lat = start_lat;
     }
 
-    public String getEnd_lon() {
+    public double getEnd_lon() {
         return end_lon;
     }
 
-    public void setEnd_lon(String end_lon) {
+    public void setEnd_lon(double end_lon) {
         this.end_lon = end_lon;
     }
 
-    public String getEnd_lat() {
+    public double getEnd_lat() {
         return end_lat;
     }
 
-    public void setEnd_lat(String end_lat) {
+    public void setEnd_lat(double end_lat) {
         this.end_lat = end_lat;
     }
 
@@ -167,7 +168,7 @@ public class Room  {
 
     public Room(){	}
 
-    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, String start_lon, String start_lat, String end_lon, String end_lat, Date start_time, String room_state) {
+    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, double start_lon, double start_lat, double end_lon, double end_lat, Date start_time, String room_state) {
         this.room_no = room_no;
         this.admin_id = admin_id;
         this.max_cnt = max_cnt;
@@ -184,7 +185,7 @@ public class Room  {
         this.room_state = room_state;
     }
 
-    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, String start_lon, String start_lat, String end_lon, String end_lat, Date start_time, String room_state, int current_cnt) {
+    public Room(int room_no, String admin_id, int max_cnt, String payment, String room_gender, String alcohol, String start_spot, String end_spot, double start_lon, double start_lat, double end_lon, double end_lat, Date start_time, String room_state, int current_cnt) {
         this.room_no = room_no;
         this.admin_id = admin_id;
         this.max_cnt = max_cnt;
