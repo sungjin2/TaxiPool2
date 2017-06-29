@@ -22,6 +22,4 @@
         android:layout_margin="20dp"
         android:layout_marginTop="100dp"/>
 
-    <!--수현이짱짱-->
-
 </RelativeLayout>
