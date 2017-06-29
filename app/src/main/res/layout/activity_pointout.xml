@@ -36,7 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.my.taxipool.util.ClearEditText
+            android:id="@+id/et_inputpoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="출금하실 금액을 입력하세요."
+            android:textSize="27dp"
+            android:inputType="number"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+        <!--<EditText
             android:id="@+id/et_inputpoint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +54,7 @@
             android:textSize="27dp"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
+            android:layout_marginRight="20dp"/>-->
         <TextView
             android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
@@ -58,6 +68,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/bt_pointout"
             android:background="@color/colorPoint"

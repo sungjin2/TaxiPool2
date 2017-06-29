@@ -17,14 +17,20 @@ android:padding="30dp"
         android:text="이름"
         android:textSize="17dp"/>
 
-
-    <EditText
+    <com.my.taxipool.util.ClearEditText
         android:id="@+id/edt_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:maxLines="1"
         android:textSize="17dp" />
+    <!--<EditText
+        android:id="@+id/edt_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textSize="17dp" />-->
 
     <TextView
         android:layout_width="match_parent"
@@ -32,14 +38,20 @@ android:padding="30dp"
         android:text="닉네임"
         android:textSize="17dp"/>
 
-
-    <EditText
+    <com.my.taxipool.util.ClearEditText
         android:id="@+id/edt_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="17dp"
         android:maxLines="1"
         android:inputType="text"/>
+    <!--<EditText
+        android:id="@+id/edt_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:maxLines="1"
+        android:inputType="text"/>-->
 
     <TextView
         android:layout_width="match_parent"
@@ -51,14 +63,20 @@ android:padding="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
-        <EditText
+        <com.my.taxipool.util.ClearEditText
             android:id="@+id/edt_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="phone"
             android:maxLines="1"
             android:textSize="17dp" />
+        <!--<EditText
+            android:id="@+id/edt_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:textSize="17dp" />-->
 
         <Button
             android:id="@+id/cert"
