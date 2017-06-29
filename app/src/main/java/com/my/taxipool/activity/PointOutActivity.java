@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.my.taxipool.R;
 import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,8 +45,8 @@ public class PointOutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pointout);
 
-        //final String info_id = Set.Load(getApplication(), "info_id", null);
-        final String info_id = "447433869";
+        final String info_id = Set.Load(getApplication(), "info_id", null);
+        //final String info_id = "447433869";
 
         tv_nowpoint = (TextView)findViewById(R.id.tv_nowpoint);
         et_inputpoint = (EditText)findViewById(R.id.et_inputpoint);
@@ -95,7 +96,7 @@ public class PointOutActivity extends AppCompatActivity {
                                             public void onFailed(Error error) {
                                                 Log.i("PointOutActivity", "LIST 조회 실패");
                                             }
-                                        }).addParam("info_id", "447433869")
+                                        }).addParam("info_id", info_id)
                                                 .addParam("point", "-" + et_inputpoint.getText().toString())
                                                 .addParam("date", s_today)
                                                 .addParam("type", -1).start();

@@ -41,8 +41,8 @@ public class PointListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pointrecord);
-        //info_id = Set.Load(getApplication(), "info_id", null);
-        info_id = "447433869";
+        info_id = Set.Load(getApplication(), "info_id", null);
+        //info_id = "447433869";
         data = new ArrayList<>();
 
 
@@ -108,6 +108,6 @@ public class PointListActivity extends AppCompatActivity {
             public void onFailed(Error error) {
                 Log.i("PointListActivity", "LIST 조회 실패");
             }
-        }).addParam("info_id", "447433869").start();
+        }).addParam("info_id", info_id).start();
     }
 }

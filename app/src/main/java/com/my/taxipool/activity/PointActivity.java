@@ -85,8 +85,8 @@ public class PointActivity extends AppCompatActivity {
         bt_pointout = (Button)findViewById(R.id.bt_pointout);
 
 
-        //final String info_id = Set.Load(getApplication(), "info_id", null);
-        final String info_id = "447433869";
+        final String info_id = Set.Load(getApplication(), "info_id", null);
+        //final String info_id = "447433869";
 
         //현재 로그인한 사람의 POINT를 조회.
         pointCheck(info_id);
@@ -197,7 +197,7 @@ public class PointActivity extends AppCompatActivity {
                                         public void onFailed(Error error) {
                                             Log.i("PointActivity", "LIST 조회 실패");
                                         }
-                                    }).addParam("info_id", "447433869")
+                                    }).addParam("info_id", info_id)
                                             .addParam("point", et_inputpoint.getText().toString())
                                             .addParam("date", s_today)
                                             .addParam("type", 1).start();
