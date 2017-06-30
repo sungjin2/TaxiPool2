@@ -1,11 +1,14 @@
 package com.my.taxipool.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +24,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.RoomSharepeopleRecyclerAdapter;
+import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -118,25 +126,71 @@ public class TabInfo extends Fragment{
                 int new_state = 0;
                 switch(state){
                     case Room.NO_MEMBER :    //합승 신청
-                        new_state = state + 10;
+
+                        ////////////////////////////////////////////////////////////////////////////
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("합승신청할꺼에요?");
+                        builder.setMessage("이 방에 합승신청하시겠습니까?");
+
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+
+                                        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        long l_today = System.currentTimeMillis();
+                                        String s_today = transFormat.format(new Date(l_today));
+
+                                        new CommuServer(CommuServer.REQUEST_ROOM, new CommuServer.OnCommuListener() {
+
+                                            @Override
+                                            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                                                Log.d("sj", "합승신청성공");
+                                            }
+
+                                            @Override
+                                            public void onFailed(Error error) {
+                                                Log.d("sj", "합승신청실패");
+                                            }
+                                        }).addParam("room_no", room.getRoom_no())
+                                                .addParam("share_info_id", info_id)
+                                                .addParam("state", "r")
+                                                .addParam("date", s_today)
+                                                .addParam("share_number", 1).start();
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        dialog.cancel();
+                                        break;
+                                }
+                            }
+                        };
+
+                        builder.setPositiveButton("네", dialogClickListener);
+                        builder.setNegativeButton("잠깐만요", dialogClickListener);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        ////////////////////////////////////////////////////////////////////////////
+                        new_state = Room.REQUIRING;
                         break;
                     case Room.REQUIRING :   //합승신청 취소
-                        new_state = state -10;
+                        new_state = Room.NO_MEMBER;
                         break;
                     case Room.WAIT_TOGO :    //출발하기
+                        //ignore
                            new_state = state + 10;
 //                        Intent intent = new Intent(getActivity(),);
 //                        startActivity(intent);
 //                        finish();
                         break;
                 }
-                Set.Save(getActivity(),"state",new_state);
+                //Set.Save(getActivity(),"state",new_state);
             }
         });
     }
 
     public void setSharePeopleListAdapter(){
-        adapter = new RoomSharepeopleRecyclerAdapter(sharePeopleList,getContext(),isBangjang);
+        adapter = new RoomSharepeopleRecyclerAdapter(sharePeopleList,getContext(),isBangjang, room.getRoom_no());
         recyclerView_roomShare.setAdapter(adapter);
     }
 

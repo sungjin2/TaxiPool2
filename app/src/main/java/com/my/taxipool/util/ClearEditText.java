@@ -100,6 +100,7 @@ public class ClearEditText extends AppCompatEditText implements TextWatcher, Vie
         if (isFocused()) {
             setClearIconVisible(s.length() > 0);
         }
+
     }
 
     @Override
@@ -115,6 +116,4 @@ public class ClearEditText extends AppCompatEditText implements TextWatcher, Vie
         clearDrawable.setVisible(visible, false);
         setCompoundDrawables(null, null, visible ? clearDrawable : null, null);
     }
-
-
 }

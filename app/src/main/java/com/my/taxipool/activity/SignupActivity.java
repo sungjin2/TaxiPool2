@@ -50,7 +50,7 @@ public class SignupActivity extends AppCompatActivity {
         bt_cert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "본인인증에 성공하였습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "본인인증에 성공하였습니다.(기능구현준비중)", Toast.LENGTH_LONG).show();
                 bt_cert.setEnabled(false);
             }
         });
