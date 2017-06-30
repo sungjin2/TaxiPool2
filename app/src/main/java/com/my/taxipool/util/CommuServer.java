@@ -33,7 +33,7 @@ public class CommuServer extends AsyncTask<String,Void,Message> {
     public static final String DELETE_BLOCKLIST = ROOT_URL+"blocklistcancel.do";
     public static final String UPDATE_STATE = ROOT_URL+"stateupdate.do";
     public static final String SELECT_BY_INFOID = ROOT_URL+"selectbyid.do";
-    public static final String UPDATE_ADDSCORE = ROOT_URL+"updatescore.do";
+    public static final String UPDATE_ADDSCORE = ROOT_URL+"addscore.do";
     public static final String INSERT_ADDBLOCKLIST = ROOT_URL+"addblocklist.do";
     public static final String POINT_CHECK = ROOT_URL+"pointcheck.do";
     public static final String POINT_RECORD = ROOT_URL+"pointrecord.do";
