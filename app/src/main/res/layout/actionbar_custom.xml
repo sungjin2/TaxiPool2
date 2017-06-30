@@ -14,7 +14,7 @@
 -->
     <TextView
         android:id="@+id/toolbar_title"
-        android:text="TaxiKitri"
+        android:text="TaxiPool"
         android:textSize="20sp"
         android:textColor="@color/black"
         android:gravity="center"

@@ -1,5 +1,7 @@
 package com.my.taxipool.vo;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Hyeon on 2017-06-02.
  */
@@ -13,6 +15,15 @@ public class CustomerInfo {
     int point;
     double resultscore;
     String state;
+    Bitmap profile_bitmap;
+
+    public Bitmap getProfile_bitmap() {
+        return profile_bitmap;
+    }
+
+    public void setProfile_bitmap(Bitmap profile_bitmap) {
+        this.profile_bitmap = profile_bitmap;
+    }
 
     public int getPoint() {
         return point;
