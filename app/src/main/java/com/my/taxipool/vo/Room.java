@@ -3,7 +3,6 @@ package com.my.taxipool.vo;
 import com.my.taxipool.R;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,6 +40,7 @@ public class Room implements Serializable {
 public static final int NO_MEMBER = 0;
 public static final int REQUIRING = 10;
 public static final int WAIT_TOGO = 20;
+public static final int GOING = 30;
 public static final int FINISH = 50;
 
 private int imgsource_alcohol;

@@ -2,6 +2,8 @@ package com.my.taxipool;
 
 import android.graphics.Bitmap;
 
+import com.my.taxipool.vo.Room;
+
 /**
  * Created by Hyeon on 2017-06-29.
  */
@@ -16,6 +18,7 @@ public class MyInfo {
     private static int point;
     private static double resultscore;
     private static int state;
+    private static int last_room;
     private static Bitmap profile_bitmap;
 
 
@@ -41,14 +44,6 @@ public class MyInfo {
 
     public static void setResultscore(double resultscore) {
         MyInfo.resultscore = resultscore;
-    }
-
-    public static int getState() {
-        return state;
-    }
-
-    public static void setState(int state) {
-        MyInfo.state = state;
     }
 
     public MyInfo(){
@@ -110,4 +105,33 @@ public class MyInfo {
     public static void setInfo_gender(String info_gender) {
         MyInfo.info_gender = info_gender;
     }
+
+    public static int getLast_room() {
+        return last_room;
+    }
+
+    public static void setLast_room(int last_room) {
+        MyInfo.last_room = last_room;
+    }
+
+    public static int getState() {
+        return state;
+    }
+    public static void setState(int state) {
+        MyInfo.state = state;
+    }
+
+    public static void setState(String state) {
+        if(state.equals("a")){
+            MyInfo.state = Room.WAIT_TOGO;
+        }else if(state.equals("r")){
+            MyInfo.state = Room.REQUIRING;
+        }else if(state.equals("e")){
+            MyInfo.state = Room.NO_MEMBER;
+        }else if(state.equals("g")){
+            MyInfo.state = Room.GOING;
+        }
+    }
+
+
 }

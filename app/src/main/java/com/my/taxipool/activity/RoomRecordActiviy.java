@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.RoomRecordRecyclerAdapter;
 import com.my.taxipool.adapter.RoomRecordRecyclerAdapterInterface;
 import com.my.taxipool.util.CommuServer;
-import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.RoomRecord;
 
@@ -31,10 +31,7 @@ public class RoomRecordActiviy  extends AppCompatActivity implements RoomRecordR
     private RoomRecordRecyclerAdapter adapter;
     private List<RoomRecord> list = new ArrayList<>();
 
-    private String start_spot;
-    private String end_spot;
-
-    String info_id;
+    String info_id = MyInfo.getInfo_id();
     RoomRecord  roomRecord;
 
     @Override
@@ -43,8 +40,6 @@ public class RoomRecordActiviy  extends AppCompatActivity implements RoomRecordR
         setContentView(R.layout.activity_roomrecord);
         recyclerview_room_record = (RecyclerView) findViewById(R.id.recyclerview_room_record);
         recyclerview_room_record.setLayoutManager(new LinearLayoutManager(this));
-
-        info_id = Set.Load(RoomRecordActiviy.this,"info_id",null);
 
         new CommuServer(CommuServer.SELECT_SHARE_LIST, new CommuServer.OnCommuListener() {
             @Override

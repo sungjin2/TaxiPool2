@@ -139,7 +139,7 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     @Override
     public void onItemClick(View view, int position) {
             Intent intent = new Intent(RoomListActivity.this, RoomActivity.class);
-            intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
+            intent.putExtra("room_no",room_list.get(position).getRoom_no());
 //            intent.putExtra("room_no_from_list",room_list.get(position).getRoom_no());
             startActivity(intent);
     }
