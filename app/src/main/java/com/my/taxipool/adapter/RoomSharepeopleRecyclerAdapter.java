@@ -174,40 +174,40 @@ public class RoomSharepeopleRecyclerAdapter extends RecyclerView.Adapter<RoomSha
         tv_dialog_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CommuServer(CommuServer.UPDATE_STATE, new CommuServer.OnCommuListener() {
-                    @Override
-                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
-                        data.setState("a");
-                        notifyDataSetChanged();
-                        mDialog.dismiss();
-                    }
-                    @Override
-                    public void onFailed(Error error) {
-                    }
-                }).addParam("room_no", room_no)
-                        .addParam("share_info_id",data.getInfo_id())
-                        .addParam("state","a")
-                        .start();
+            new CommuServer(CommuServer.UPDATE_STATE, new CommuServer.OnCommuListener() {
+                @Override
+                public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                    data.setState("a");
+                    notifyDataSetChanged();
+                    mDialog.dismiss();
+                }
+                @Override
+                public void onFailed(Error error) {
+                }
+            }).addParam("room_no", room_no)
+                    .addParam("share_info_id",data.getInfo_id())
+                    .addParam("state","a")
+                    .start();
 
             }
         });
         tv_dialog_no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CommuServer(CommuServer.UPDATE_STATE, new CommuServer.OnCommuListener() {
-                    @Override
-                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
-                        list.remove(position);
-                        notifyDataSetChanged();
-                        mDialog.dismiss();
-                    }
-                    @Override
-                    public void onFailed(Error error) {
-                    }
-                }).addParam("room_no", room_no)
-                        .addParam("share_info_id",data.getInfo_id())
-                        .addParam("state","d")
-                        .start();
+            new CommuServer(CommuServer.UPDATE_STATE, new CommuServer.OnCommuListener() {
+                @Override
+                public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                    list.remove(position);
+                    notifyDataSetChanged();
+                    mDialog.dismiss();
+                }
+                @Override
+                public void onFailed(Error error) {
+                }
+            }).addParam("room_no", room_no)
+                    .addParam("share_info_id",data.getInfo_id())
+                    .addParam("state","d")
+                    .start();
             }
         });
 

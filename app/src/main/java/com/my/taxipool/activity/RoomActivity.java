@@ -10,10 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.MyPagerAdapter;
 import com.my.taxipool.util.CommuServer;
-import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
 
@@ -33,10 +33,10 @@ public class RoomActivity extends BaseActivity {
     private ViewPager viewPager;
     private TabLayout tab;
 
-    //status
-    int state;
-    String info_id;
-    static public int room_no;
+    //state
+    private String info_id = MyInfo.getInfo_id();
+    private int room_no;
+    private int state;
 
     //items
     private Room room;
@@ -46,18 +46,11 @@ public class RoomActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        info_id = Set.Load(RoomActivity.this,"info_id",null);
-        room_no = Set.Load(RoomActivity.this,"room_no",-1);
-
-        //변수형 정리할 것
-        if(getIntent().hasExtra("room_no_from_list")){        //list 에서 넘어온 상태
-            room_no = getIntent().getIntExtra("room_no_from_list",0);
-        }else if (getIntent().hasExtra("room_no_from_intro")) {   //원래 room소속 상태
-            room_no = getIntent().getIntExtra("room_no_from_intro",0);
-        }else if(getIntent().hasExtra("room_no_from_regist")){  // 방장으로 옴
-            room_no = getIntent().getIntExtra("room_no_from_regist",0);
+        if(MyInfo.getState() > Room.NO_MEMBER){
+            room_no = MyInfo.getLast_room();
+        }else{
+            room_no = getIntent().getIntExtra("room_no",0);
         }
-        state = Set.Load(RoomActivity.this, "state", Room.NO_MEMBER);
         getRoomInfo(room_no);
     }
 
@@ -70,7 +63,7 @@ public class RoomActivity extends BaseActivity {
         TabInfo tabInfo = new TabInfo();
         tabInfo.setData(Integer.parseInt(info_id), room, sharePeopleList);
         adapter.addFragment(tabInfo, "합승정보");
-        if (state >= 20){
+        if (state >= Room.WAIT_TOGO){
             TabChat tabChat = new TabChat();
             tabChat.setRoom_no(room.getRoom_no());
             adapter.addFragment(tabChat, "채팅방");
@@ -136,7 +129,7 @@ public class RoomActivity extends BaseActivity {
                             customerInfo.setProfile_pic(roomInfoObject.getJSONObject(i).getString("profile_pic"));
 
                             if(info_id.equals(roomInfoObject.getJSONObject(i).getString("share_info_id"))){
-                                customerInfo.setState("m");
+                                customerInfo.setState("m"); //me 어차피 내상태는 MyInfo 에 있음
                             }else{
                                 customerInfo.setState(roomInfoObject.getJSONObject(i).getString("state"));
                             }
@@ -183,10 +176,22 @@ public class RoomActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_leaveroom:
-                Set.Delete(RoomActivity.this,"room_no");
-                Intent intent = new Intent(getApplicationContext(),HomeActivity2.class);
-                ActivityCompat.finishAffinity(this); //모든 액티비티 종료
-                startActivity(intent);
+                //서버추가
+                new CommuServer(CommuServer.UPDATE_STATE, new CommuServer.OnCommuListener() {
+                    @Override
+                    public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                        MyInfo.setState("e");
+                        Intent intent = new Intent(getApplicationContext(),HomeActivity2.class);
+                        ActivityCompat.finishAffinity(RoomActivity.this); //모든 액티비티 종료
+                        startActivity(intent);
+                    }
+                    @Override
+                    public void onFailed(Error error) {
+                    }
+                }).addParam("room_no", room_no)
+                        .addParam("share_info_id",info_id)
+                        .addParam("state","d")
+                        .start();
                 return true;
             default:
                 break;

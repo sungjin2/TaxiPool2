@@ -1,6 +1,8 @@
 package com.my.taxipool.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,12 +22,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.RoomSharepeopleRecyclerAdapter;
 import com.my.taxipool.util.CommuServer;
-import com.my.taxipool.util.Set;
+import com.my.taxipool.util.ImageResourceUtil;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
 
@@ -44,7 +50,7 @@ public class TabInfo extends Fragment{
     private View rootView;
     private SupportMapFragment mapFragment;
 
-    int state;
+    int state = MyInfo.getState();
     Room room;
     int info_id;
     Boolean isBangjang = false;
@@ -68,8 +74,6 @@ public class TabInfo extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         rootView = inflater.inflate(R.layout.view_room_infobase,container,false);
-
-        state = getActivity().getIntent().getIntExtra("state",Room.NO_MEMBER);
         setViewIds();
         setViews();
         setSharePeopleListAdapter();
@@ -117,7 +121,7 @@ public class TabInfo extends Fragment{
         else if(state == Room.WAIT_TOGO){
             btn_in_room.setBackgroundColor(getResources().getColor(R.color.colorPoint));
             btn_in_room.setTextColor(getResources().getColor(R.color.white));
-            btn_in_room.setText("출발 하기");
+            btn_in_room.setText("차에 탔어요");
         }
 
         btn_in_room.setOnClickListener(new View.OnClickListener(){
@@ -126,11 +130,10 @@ public class TabInfo extends Fragment{
                 int new_state = 0;
                 switch(state){
                     case Room.NO_MEMBER :    //합승 신청
-
                         ////////////////////////////////////////////////////////////////////////////
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("합승신청할꺼에요?");
-                        builder.setMessage("이 방에 합승신청하시겠습니까?");
+                        builder.setTitle("합승 신청");
+                        builder.setMessage("이 방에 합승신청할꾸야?");
 
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
@@ -143,22 +146,19 @@ public class TabInfo extends Fragment{
                                         String s_today = transFormat.format(new Date(l_today));
 
                                         new CommuServer(CommuServer.REQUEST_ROOM, new CommuServer.OnCommuListener() {
-
                                             @Override
                                             public void onSuccess(JSONObject object, JSONArray arr, String str) {
-                                                Log.d("sj", "합승신청성공");
+                                                Log.d("sj ddu gy", "합승신청성공");
                                             }
-
                                             @Override
                                             public void onFailed(Error error) {
-                                                Log.d("sj", "합승신청실패");
+                                                Log.d("sj ddu gy", "합승신청실패");
                                             }
                                         }).addParam("room_no", room.getRoom_no())
                                                 .addParam("share_info_id", info_id)
                                                 .addParam("state", "r")
                                                 .addParam("date", s_today)
                                                 .addParam("share_number", 1).start();
-
                                     case DialogInterface.BUTTON_NEGATIVE:
                                         dialog.cancel();
                                         break;
@@ -175,6 +175,9 @@ public class TabInfo extends Fragment{
                         break;
                     case Room.REQUIRING :   //합승신청 취소
                         new_state = Room.NO_MEMBER;
+                        Intent intent = new Intent(getActivity(),HomeActivity2.class);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
                     case Room.WAIT_TOGO :    //출발하기
                         //ignore
@@ -184,7 +187,7 @@ public class TabInfo extends Fragment{
 //                        finish();
                         break;
                 }
-                //Set.Save(getActivity(),"state",new_state);
+                MyInfo.setState(new_state);
             }
         });
     }
@@ -215,29 +218,48 @@ public class TabInfo extends Fragment{
         } else {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
-                public void onMapReady(final GoogleMap map) {
+                public void onMapReady(final GoogleMap googleMap) {
+
                     MarkerOptions startMarkerOption = new MarkerOptions();
                     MarkerOptions endMarkerOption = new MarkerOptions();
-                    LatLng start_latlon = new LatLng(room.getStart_lon(), room.getStart_lat());
-                    LatLng end_latlon = new LatLng(room.getEnd_lon(), room.getStart_lat());
-                    LatLng cneter_latlon = new LatLng((room.getStart_lon() + room.getEnd_lon()) / 2,
-                            (room.getStart_lat() + room.getStart_lat()) / 2);
+                    LatLng start_latlon = new LatLng(room.getStart_lat(), room.getStart_lon());
+                    LatLng end_latlon = new LatLng(room.getEnd_lat(), room.getEnd_lon());
 
-                    startMarkerOption.position(start_latlon);
-                    startMarkerOption.title("출발지");
-                    startMarkerOption.snippet(room.getStart_spot());
-                    endMarkerOption.position(end_latlon);
-                    endMarkerOption.title("도착지");
-                    endMarkerOption.snippet(room.getEnd_spot());
+                    ImageResourceUtil util = new ImageResourceUtil();
+                    Bitmap bitmap_icon = util.getBitmap(getActivity(),R.drawable.ic_place_yellow_24dp);
+                    bitmap_icon = resizeMapIcons(bitmap_icon,130,130);
 
-                    map.addMarker(startMarkerOption);
-                    map.addMarker(endMarkerOption);
-                    map.moveCamera(CameraUpdateFactory.newLatLng(cneter_latlon));
-                    map.animateCamera(CameraUpdateFactory.zoomTo(10));
+                    startMarkerOption.position(start_latlon)
+                            .title("출발지")
+                            .snippet(room.getStart_spot())
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
+                    endMarkerOption.position(end_latlon)
+                            .title("도착지")
+                            .snippet(room.getEnd_spot())
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap_icon));
+
+                    googleMap.addMarker(startMarkerOption);
+                    googleMap.addMarker(endMarkerOption);
+                    googleMap.addPolyline(new PolylineOptions()
+                            .add(start_latlon, end_latlon)
+                            .width(4)
+                            .color(getResources().getColor(R.color.colorDart)));
+
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(start_latlon);
+                    builder.include(end_latlon);
+                    LatLngBounds bounds = builder.build();
+
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
                 }
 
             });
         }
+    }
+
+    public Bitmap resizeMapIcons(Bitmap imageBitmap,int width, int height){
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
     }
 
     public void setData(int info_id, Room room,ArrayList<CustomerInfo> sharePeopleList) {

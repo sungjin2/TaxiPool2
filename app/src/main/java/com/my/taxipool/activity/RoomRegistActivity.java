@@ -37,10 +37,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.ImageResourceUtil;
-import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.Room;
 
 import org.json.JSONArray;
@@ -54,9 +54,8 @@ import java.util.Date;
 
 public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyCallback{
     ArrayList<String> sp_room_regist= new ArrayList<String>();
-    String info_id;
+    String info_id = MyInfo.getInfo_id();
     TextView tv_regist_start_spot,tv_regist_end_spot;
-    MarkerOptions startMarkerOption, endMarkerOption;
     GoogleMap googlemapTmp;
 
     final int DIALOG_TIME = 2;
@@ -87,12 +86,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment)manager.findFragmentById(R.id.map_regist);
         mapFragment.getMapAsync(this);
         //지도준비 -> onMapReady() 자동호출
-
-        info_id = Set.Load(RoomRegistActivity.this,"info_id",null);
         setViewIds();
         setViews();
-
-
     }
 
     public void setViewIds(){
@@ -126,9 +121,6 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sp_room_regist);
 
         spin_regist_peoplenum.setAdapter(adapter);
-
-
-
     }
 
 
@@ -210,9 +202,9 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                                         Log.d("ddu result!!",str);
                                         room_no = Integer.parseInt(str);
                                         Intent intent = new Intent(RoomRegistActivity.this, RoomActivity.class);
-                                        Set.Save(RoomRegistActivity.this,"room_no",room_no);
-                                        intent.putExtra("room_no_from_regist",room_no);
-                                        intent.putExtra("state",Room.WAIT_TOGO);
+                                        intent.putExtra("room_no",room_no);
+                                        MyInfo.setLast_room(room_no);
+                                        MyInfo.setState(Room.WAIT_TOGO);
                                         startActivity(intent);
                                         finish();
                                     }
@@ -313,8 +305,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void onMapReady(final GoogleMap googleMap) {
-        startMarkerOption = new MarkerOptions();
-        endMarkerOption = new MarkerOptions();
+        MarkerOptions startMarkerOption = new MarkerOptions();
+        MarkerOptions endMarkerOption = new MarkerOptions();
         LatLng start_latlon = new LatLng(room.getStart_lat(), room.getStart_lon());
         LatLng end_latlon = new LatLng(room.getEnd_lat(), room.getEnd_lon());
 

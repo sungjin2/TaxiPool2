@@ -77,6 +77,9 @@ public class IntroActivity extends AppCompatActivity {
                         MyInfo.setInfo_gender(object.getString("info_gender"));
                         MyInfo.setPoint(object.getInt("point"));
                         MyInfo.setResultscore(object.getInt("score")/(double)object.getInt("cnt"));
+//                        MyInfo.setState(object.getString("state"));
+//                        MyInfo.setLast_room(object.getString("room_no"));
+                        MyInfo.setState("e");
                         setBitmap();
                     }catch(JSONException e){
                         e.printStackTrace();
@@ -111,16 +114,11 @@ public class IntroActivity extends AppCompatActivity {
             ImageHelper ih = new ImageHelper();
             bitmap = ih.getRoundedCornerBitmap(bitmap,200);
             MyInfo.setProfile_bitmap(bitmap);
-            String room_no = Set.Load(IntroActivity.this, "room_no", "NO_ROOM");
-            if(room_no.equals("NO_ROOM")){
+            if(MyInfo.getState() == Room.NO_MEMBER){
                 intent = new Intent(IntroActivity.this,HomeActivity2.class);
             }else{
-                int state = Set.Load(IntroActivity.this, "state", Room.NO_MEMBER);
                 intent = new Intent(IntroActivity.this,RoomActivity.class);
-                intent.putExtra("state", state);
-                intent.putExtra("room_no_from_intro", room_no);
             }
-            intent.putExtra("info_id", info_id);
             startActivity(intent);
         }catch(InterruptedException e) {
             e.printStackTrace();
