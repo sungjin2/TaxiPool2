@@ -103,7 +103,7 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
             }
         }).addParam("start_lat", room.getStart_lat())
                 .addParam("start_lon", room.getStart_lon())
-                .addParam("start_lat", room.getEnd_lat())
+                .addParam("end_lat", room.getEnd_lat())
                 .addParam("end_lon", room.getEnd_lon()).start();
 //    }).addParam("start_lon", tmpRoom.getStartLat())
 //            .addParam("start_lat", tmpRoom.getStartLon())
@@ -121,7 +121,7 @@ public class RoomListActivity extends AppCompatActivity implements RoomListRecyc
     private void setViews() {
         tv_myEndSpot.setText(room.getEnd_spot());
         tv_myStartSpot.setText(room.getStart_spot());
-        tv_myStartTime.setText(room.getStr_Start_time());
+        tv_myStartTime.setText(room.getStart_time2());
         btn_goto_makeroom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

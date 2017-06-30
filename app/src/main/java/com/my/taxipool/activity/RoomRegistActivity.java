@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
@@ -47,11 +48,12 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyCallback{
-
+    ArrayList<String> sp_room_regist= new ArrayList<String>();
     String info_id;
     TextView tv_regist_start_spot,tv_regist_end_spot;
     MarkerOptions startMarkerOption, endMarkerOption;
@@ -74,6 +76,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
     private int room_no;
     private Date time;
     private  String strstart_time;
+    private int current_cnt;
     Room room;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -115,7 +118,19 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
         spin_regist_peoplenum = (Spinner)findViewById(R.id.spin_regist_peoplenum);
         tv_regist_time = (TextView)findViewById(R.id.tv_regist_time);
         room = (Room) getIntent().getSerializableExtra("object");
+
+        current_cnt = room.getCurrent_cnt();
+        for(int i = 0;i<4-current_cnt ;i++){
+            sp_room_regist.add((i+1)+"명");
+        }
+        ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sp_room_regist);
+
+        spin_regist_peoplenum.setAdapter(adapter);
+
+
+
     }
+
 
     public void setViews(){
         //선택옵션 체크박스 체크 선택 조절하기
@@ -134,7 +149,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
 
         tv_regist_start_spot.setText(room.getStart_spot());
         tv_regist_end_spot.setText(room.getEnd_spot());
-        tv_regist_time.setText(room.getStr_Start_time());
+        tv_regist_time.setText(room.getStart_time2());
         time = room.getStart_time();
         strstart_time = transFormat.format(time);
         tv_regist_time.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +187,7 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                 }
 
                 room = new Room(0,info_id,
-                        spin_regist_peoplenum.getSelectedItemPosition()+1,
+                        spin_regist_peoplenum.getSelectedItemPosition()+1+current_cnt ,
                         pay,gender,can_alcohol,tv_regist_start_spot.getText().toString(),
                         tv_regist_end_spot.getText().toString(),
                         room.getStart_lat(),room.getStart_lon(),
