@@ -39,6 +39,7 @@ public class CommuServer extends AsyncTask<String,Void,Message> {
     public static final String POINT_RECORD = ROOT_URL+"pointrecord.do";
     public static final String POINT_CHARGE = ROOT_URL+"pointcharge.do";
     public static final String SELECT_SHARE_LIST = ROOT_URL+"sharelist.do";
+    public static final String REQUEST_ROOM = ROOT_URL+"requestroom.do";
 
     protected String url=ROOT_URL;
     protected String query = "";
