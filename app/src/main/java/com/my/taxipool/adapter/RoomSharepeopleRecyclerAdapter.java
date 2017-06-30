@@ -47,14 +47,16 @@ public class RoomSharepeopleRecyclerAdapter extends RecyclerView.Adapter<RoomSha
     //item
     CustomerInfo data;
     Boolean isBangjang;
+    int room_no;
     private ArrayList<CustomerInfo> list;
     private Context context;
     Bitmap bitmap ;
 
-    public RoomSharepeopleRecyclerAdapter(ArrayList<CustomerInfo> list, Context context,Boolean isBangjang){
+    public RoomSharepeopleRecyclerAdapter(ArrayList<CustomerInfo> list, Context context,Boolean isBangjang, int room_no){
         this.list = list;
         this.context = context;
         this.isBangjang = isBangjang;
+        this.room_no = room_no;
     }
 
     @Override
@@ -182,7 +184,7 @@ public class RoomSharepeopleRecyclerAdapter extends RecyclerView.Adapter<RoomSha
                     @Override
                     public void onFailed(Error error) {
                     }
-                }).addParam("room_no", 2)
+                }).addParam("room_no", room_no)
                         .addParam("share_info_id",data.getInfo_id())
                         .addParam("state","a")
                         .start();
@@ -202,7 +204,7 @@ public class RoomSharepeopleRecyclerAdapter extends RecyclerView.Adapter<RoomSha
                     @Override
                     public void onFailed(Error error) {
                     }
-                }).addParam("room_no", 2)
+                }).addParam("room_no", room_no)
                         .addParam("share_info_id",data.getInfo_id())
                         .addParam("state","d")
                         .start();

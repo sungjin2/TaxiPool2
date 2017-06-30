@@ -2,21 +2,14 @@ package com.my.taxipool.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.my.taxipool.R;
 import com.my.taxipool.adapter.MyPagerAdapter;
 import com.my.taxipool.util.CommuServer;
@@ -35,16 +28,10 @@ import java.util.Date;
  * Created by Hyeon on 2017-05-28.
  */
 
-public class RoomActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+public class RoomActivity extends BaseActivity {
     //viewPager
     private ViewPager viewPager;
     private TabLayout tab;
-
-    //toolbar
-    private Toolbar toolbar;
-    private NavigationView navigationView;
-    private DrawerLayout drawer;
 
     //status
     int state;
@@ -61,21 +48,6 @@ public class RoomActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         info_id = Set.Load(RoomActivity.this,"info_id",null);
         room_no = Set.Load(RoomActivity.this,"room_no",-1);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar_room);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout_room);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null){
-            getSupportActionBar().setTitle("합승방");
-        }
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView.setNavigationItemSelectedListener(this);
 
         //변수형 정리할 것
         if(getIntent().hasExtra("room_no_from_list")){        //list 에서 넘어온 상태
@@ -203,54 +175,22 @@ public class RoomActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_at_room, menu);
+        super.onCreateOptionsMenu(menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_leaveroom) {
-            Set.Delete(RoomActivity.this,"room_no");
-            Intent intent = new Intent(getApplicationContext(),HomeActivity2.class);
-            ActivityCompat.finishAffinity(this); //모든 액티비티 종료
-            startActivity(intent);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_leaveroom:
+                Set.Delete(RoomActivity.this,"room_no");
+                Intent intent = new Intent(getApplicationContext(),HomeActivity2.class);
+                ActivityCompat.finishAffinity(this); //모든 액티비티 종료
+                startActivity(intent);
+                return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    //햄버거 네비게이션 선택
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        /*if (id == 0) {
-        } else if (id == 1) {
-        } else if (id == 2) {
-        }*/
-        switch (id) {
-            case R.id.nav_sub_boardlist:
-                break;
-            case R.id.nav_sub_blocklist:
-                Intent intent = new Intent(RoomActivity.this, BlockActivity.class);
-                startActivity(intent);
-                break;
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }else{
-            super.onBackPressed();
-        }
     }
 }
