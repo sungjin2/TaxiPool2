@@ -1,6 +1,8 @@
 package com.my.taxipool.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,12 +19,22 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 import com.kakao.util.helper.log.Logger;
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
+import com.my.taxipool.util.CommuServer;
+import com.my.taxipool.util.ImageHelper;
 import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
+import com.my.taxipool.vo.Room;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -42,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
     String s_nickname;
     String s_phone;
     String s_gender;
+
+    Bitmap bitmap;
 
     //회원정보 입력 VO
     CustomerInfo info;
@@ -78,10 +92,10 @@ public class LoginActivity extends AppCompatActivity {
             s_gender = data.getStringExtra("gender");
 
             //★테스트를 위해 잠시 가입을 막아둡니다!!, 바로test로가게바꿔놈!!
-            //requestSignUp();
+            requestSignUp();
 
             //★원래는 onSuccess에 해야하지만 여기서 서버에 보내보겠습니다!!
-            redirectTest();
+            //redirectTest();
         }
 
         //간편로그인시 호출, 없으면 간편로그인시 로그인 성공화면으로 넘어가지 않음
@@ -199,11 +213,13 @@ public class LoginActivity extends AppCompatActivity {
                 info_id = String.valueOf(userProfile.getId());
                 profile_pic = userProfile.getNickname();
                 Set.Save(getApplicationContext(), "info_id", info_id);
+                getMyInfo();
 
                 Intent intent = new Intent(LoginActivity.this, HomeActivity2.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 Toast.makeText(getApplicationContext(), "간편로그인으로 접속하였습니다", Toast.LENGTH_SHORT).show();
+
                 startActivity(intent);
                 finish();
             }
@@ -312,5 +328,74 @@ public class LoginActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
+    public void getMyInfo(){
+        new CommuServer(CommuServer.SELECT_BY_INFOID, new CommuServer.OnCommuListener() {
+            @Override
+            public void onSuccess(JSONObject object, JSONArray arr, String str) {
+                if(str!= null){
+                    if(str.equals("0")){
+                        Log.d("ddu login","0");
+                    }
+                }else{
+                    try{
+                        MyInfo.setInfo_id(object.getString("info_id"));
+                        MyInfo.setProfile_pic(object.getString("profile_pic"));
+                        MyInfo.setPhone_no(object.getString("phone_no"));
+                        MyInfo.setInfo_name(object.getString("info_name"));
+                        MyInfo.setNickname(object.getString("nickname"));
+                        MyInfo.setInfo_gender(object.getString("info_gender"));
+                        MyInfo.setPoint(object.getInt("point"));
+                        MyInfo.setResultscore(object.getInt("score")/(double)object.getInt("cnt"));
+//                        MyInfo.setState(object.getString("state"));
+//                        MyInfo.setLast_room(object.getString("room_no"));
+                        MyInfo.setState("e");
+                        setBitmap();
+                    }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailed(Error error) {
+            }
+        }).addParam("info_id", info_id).start();
+    }
+
+    //get myinfo for hamberger menu
+    private void setBitmap() {
+        Thread mThread = new Thread(){
+            @Override
+            public void run(){
+                try{
+                    URL url = new URL(MyInfo.getProfile_pic());
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        mThread.start();
+        try{
+            mThread.join();
+            ImageHelper ih = new ImageHelper();
+            bitmap = ih.getRoundedCornerBitmap(bitmap,200);
+            MyInfo.setProfile_bitmap(bitmap);
+            Intent intent;
+            if(MyInfo.getState() == Room.NO_MEMBER){
+                intent = new Intent(LoginActivity.this,HomeActivity2.class);
+            }else{
+                intent = new Intent(LoginActivity.this,RoomActivity.class);
+            }
+            startActivity(intent);
+        }catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

@@ -37,7 +37,7 @@ public class BlockActivity extends AppCompatActivity{
 
         listView=(ListView)findViewById(R.id.listview);
 
-        new CommuServer(CommuServer.POINT_CHECK, new CommuServer.OnCommuListener() {
+        new CommuServer(CommuServer.SELECT_BOCKLIST, new CommuServer.OnCommuListener() {
 
             @Override
             public void onSuccess(JSONObject object, JSONArray arr, String str) {
