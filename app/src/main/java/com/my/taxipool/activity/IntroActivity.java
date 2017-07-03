@@ -34,6 +34,7 @@ public class IntroActivity extends AppCompatActivity {
     String info_id;
     Bitmap bitmap;
     Intent intent;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -43,14 +44,10 @@ public class IntroActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Set.Delete(IntroActivity.this);
-                Set.Save(IntroActivity.this,"info_id","135425414");
                 info_id = Set.Load(IntroActivity.this,"info_id",null);
                 if( null != info_id){
                     //id있을 때 - 어플 받고 로그인이력 1번 이상
-
                     getMyInfo();
-
                 }else{
                     intent = new Intent(IntroActivity.this, LoginActivity.class);
                     startActivity(intent);
@@ -91,6 +88,7 @@ public class IntroActivity extends AppCompatActivity {
             }
         }).addParam("info_id", info_id).start();
     }
+
     //get myinfo for hamberger menu
     private void setBitmap() {
         Thread mThread = new Thread(){
