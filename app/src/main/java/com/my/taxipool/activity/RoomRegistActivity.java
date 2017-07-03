@@ -51,6 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
 public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyCallback{
     ArrayList<String> sp_room_regist= new ArrayList<String>();
@@ -177,6 +178,8 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                     rd = (RadioButton) findViewById(payment.getCheckedRadioButtonId());
                     pay = "c";
                 }
+              /*  Intent intent_current_cnt = new Intent();
+                intent_current_cnt.putExtra("current_cnt",current_cnt);*/
 
                 room = new Room(0,info_id,
                         spin_regist_peoplenum.getSelectedItemPosition()+1+current_cnt ,
@@ -185,6 +188,10 @@ public class RoomRegistActivity extends AppCompatActivity implements OnMapReadyC
                         room.getStart_lat(),room.getStart_lon(),
                         room.getEnd_lat(),room.getEnd_lon(),
                         time, "a");
+
+                com.my.taxipool.util.Set.Save(getApplicationContext(), "current_cnt", current_cnt );
+
+
 
                 //AlertDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(RoomRegistActivity.this);

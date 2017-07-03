@@ -81,6 +81,7 @@ public class HomeActivity2 extends BaseActivity
     private Spinner home_spinner;
 
     private Boolean[] issetted = new Boolean[2];
+    private Boolean[] valuecheck = new Boolean[3];
     //0은 출발 inputview, 1은 도착 inputview
     private  Boolean flag_fromto = false;
 
@@ -127,6 +128,9 @@ public class HomeActivity2 extends BaseActivity
 
         issetted[0] = false;
         issetted[1] = false;
+        valuecheck[0]=false;
+        valuecheck[1]=false;
+        valuecheck[2]=false;
 
         setViewIds();
         setViews();
@@ -350,10 +354,18 @@ public class HomeActivity2 extends BaseActivity
                     showDialog(DIALOG_TIME);
                     break;
                 case R.id.btn_home:
-                    intent = new Intent(HomeActivity2.this,RoomListActivity.class);
-                    room.setCurrent_cnt(home_spinner.getSelectedItemPosition()+1);
-                    intent.putExtra("object",room);
-                    startActivity(intent);
+                            if (!valuecheck[0]) {
+                                Toast.makeText(HomeActivity2.this, "출발지를 지정해주세요", Toast.LENGTH_SHORT).show();
+                            } else if (!valuecheck[1]) {
+                                Toast.makeText(HomeActivity2.this, "도착지를 지정해주세요", Toast.LENGTH_SHORT).show();
+                            } else if (!valuecheck[2]) {
+                                Toast.makeText(HomeActivity2.this, "출발시간을 지정해주세요", Toast.LENGTH_SHORT).show();
+                            }else {
+                                intent = new Intent(HomeActivity2.this, RoomListActivity.class);
+                                room.setCurrent_cnt(home_spinner.getSelectedItemPosition() + 1);
+                                intent.putExtra("object", room);
+                                startActivity(intent);
+                            }
                     break;
                 case R.id.btn_hidden:
                     LatLng latLng = googleMap.getCameraPosition().target;
@@ -368,6 +380,7 @@ public class HomeActivity2 extends BaseActivity
                         view_spot_from.setRightLabel(room.getStart_spot());
                         view_spot_from.setRightColor(R.color.black);
                         issetted[0]= true;
+                        valuecheck[0] = true;
                     }else{
                         room.setEnd_spot(view_hidden_spot.getRightLabel());
                         room.setEnd_lat(latLng.latitude);
@@ -379,6 +392,7 @@ public class HomeActivity2 extends BaseActivity
                         view_spot_to.setRightLabel(room.getEnd_spot());
                         view_spot_to.setRightColor(R.color.black);
                         issetted[1]= true;
+                        valuecheck[1] = true;
                     }
                     showInputs(true);
                     break;
@@ -548,8 +562,6 @@ public class HomeActivity2 extends BaseActivity
                                 if( hourOfDay < hour || (hourOfDay==hour && minute < iminute) ){
                                     Toast.makeText(getApplicationContext(), "시간설정은 24시간 제한이므로 내일로 설정됩니다.", Toast.LENGTH_LONG).show();
                                     calendar.add(Calendar.DATE, 1);
-                                        Toast.makeText(getApplicationContext(), "시간설정은 24시간 제한이므로 내일로 설정됩니다.", Toast.LENGTH_LONG).show();
-                                        calendar.add(Calendar.DATE, 1);
                                     if(hourOfDay>12) {
                                         view_time.setRightLabel("내일 오후" + (hourOfDay-12) + "시 " + minute + "분");
                                     }else if(hourOfDay==0){
@@ -567,7 +579,7 @@ public class HomeActivity2 extends BaseActivity
                                     }
                                 }
                                 room.setStart_time2(view_time.getRightLabel().toString());
-
+                                valuecheck[2] = true;
                                 view_time.setRightColor(R.color.black);
                                 String strstart_time = sdfday.format(calendar.getTimeInMillis())+" "+hourOfDay+":"+""+minute;
                                 try {
@@ -582,4 +594,6 @@ public class HomeActivity2 extends BaseActivity
         // false : 오전/오후 항목이 생김
         return tpd;
     }
+
+
 }

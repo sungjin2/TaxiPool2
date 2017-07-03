@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -92,12 +94,17 @@ public class RoomActivity extends BaseActivity {
                     Log.d("ddu RoomActivity","no room");
                 }else {
                     try {
+
+                        Long time = Long.parseLong(roomInfoObject.getString("start_time"));
+                        Date d = new Date(time);
+
                         room = new Room(roomInfoObject.getInt("room_no"), roomInfoObject.getString("admin_id"), roomInfoObject.getInt("max_cnt"),
                                 roomInfoObject.getString("payment"), roomInfoObject.getString("room_gender"), roomInfoObject.getString("alcohol"),
                                 roomInfoObject.getString("start_spot"), roomInfoObject.getString("end_spot"),
                                 roomInfoObject.getDouble("start_lon"), roomInfoObject.getDouble("start_lat"),
                                 roomInfoObject.getDouble("end_lon"), roomInfoObject.getDouble("end_lat"),
-                                new Date(), roomInfoObject.getString("room_state"), roomInfoObject.getInt("current_cnt"));
+                                d, roomInfoObject.getString("room_state"), roomInfoObject.getInt("current_cnt"));
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
