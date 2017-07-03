@@ -114,13 +114,6 @@ public class RoomCalculatorActivity extends Activity implements RoomListRecycler
             }
         }).addParam("room_no", "241").start();
 
- /*       bt_calcul.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });*/
-
         bt_calcul.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

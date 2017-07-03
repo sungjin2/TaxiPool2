@@ -6,13 +6,11 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     >
-
     <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map_regist"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
-
     <include layout="@layout/view_line"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -245,6 +243,7 @@
                 android:layout_weight="1"
                 android:textSize="13dp"
                 android:textColor="@color/black"
+                android:checked="true"
                 />
 
             <RadioButton
@@ -261,15 +260,17 @@
 
     </LinearLayout>
     <include layout="@layout/view_line"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <Button
             android:id="@+id/btRegist"
-            android:background="@drawable/selector_drawable_click"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@drawable/selector_drawable_click"
             android:text="방 생성"
             android:textColor="@color/white" />
     </RelativeLayout>
