@@ -32,6 +32,7 @@ import com.my.taxipool.R;
 import com.my.taxipool.adapter.RoomSharepeopleRecyclerAdapter;
 import com.my.taxipool.util.CommuServer;
 import com.my.taxipool.util.ImageResourceUtil;
+import com.my.taxipool.util.Set;
 import com.my.taxipool.vo.CustomerInfo;
 import com.my.taxipool.vo.Room;
 
@@ -55,12 +56,14 @@ public class TabInfo extends Fragment{
     int info_id;
     Boolean isBangjang = false;
     private ArrayList<CustomerInfo> sharePeopleList;
-
+    SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat Format = new SimpleDateFormat("MM-dd HH:mm");
     //views
     private Button btn_in_room;
     private TextView tv_info_startspot;
     private TextView tv_info_endspot;
     private TextView tv_info_detail;
+    private TextView tv_room_taxibi;
 
     //People List
     RecyclerView recyclerView_roomShare;
@@ -81,10 +84,14 @@ public class TabInfo extends Fragment{
         return rootView;
     }
     private void setViewIds(){
+
+        room.setCurrent_cnt(Set.Load(getActivity(), "current_cnt", -1));
         btn_in_room = (Button) rootView.findViewById(R.id.btn_in_room);
         tv_info_startspot = (TextView) rootView.findViewById(R.id.tv_info_startspot);
         tv_info_endspot = (TextView) rootView.findViewById(R.id.tv_info_endspot);
         tv_info_detail = (TextView) rootView.findViewById(R.id.tv_info_detail);
+        tv_room_taxibi= (TextView) rootView.findViewById(R.id.tv_room_taxibi);
+
         recyclerView_roomShare = (RecyclerView) rootView.findViewById(R.id.recyclerview_room_info);
         recyclerView_roomShare.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -98,6 +105,8 @@ public class TabInfo extends Fragment{
         //setting distance
         tv_info_startspot.setText(room.getStart_spot());
         tv_info_endspot.setText(room.getEnd_spot());
+        Log.i("ddu",""+room.getEnd_spot());
+        Log.i("ddu",""+room.getCurrent_cnt());
         tv_info_detail.setText(detailToString(room.getMax_cnt(),room.getCurrent_cnt(),room.getStart_time()));
 
         //setting images
@@ -141,7 +150,7 @@ public class TabInfo extends Fragment{
                                 switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
 
-                                        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
                                         long l_today = System.currentTimeMillis();
                                         String s_today = transFormat.format(new Date(l_today));
 
@@ -199,7 +208,7 @@ public class TabInfo extends Fragment{
 
     //바꿀 것
     private String detailToString(int maxCnt,int currentCnt,Date startTime){
-        return "(" + currentCnt + "/" + maxCnt + ")" + startTime.toString();
+        return "(" + currentCnt + "/" + maxCnt + ")" + Format.format(startTime);
     }
 
     @Override
@@ -213,18 +222,20 @@ public class TabInfo extends Fragment{
         FragmentManager fm = getChildFragmentManager();
         mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.view_info_map);
         if(mapFragment == null){
+            Log.i("ddu","1111ㄹ도들어ㅗㅁ");
             mapFragment = SupportMapFragment.newInstance();
             fm.beginTransaction().replace(R.id.view_info_map, mapFragment).commit();
         } else {
+            Log.i("ddu","2ㄹ도들어ㅗㅁ");
             mapFragment.getMapAsync(new OnMapReadyCallback() {
+
                 @Override
                 public void onMapReady(final GoogleMap googleMap) {
 
                     MarkerOptions startMarkerOption = new MarkerOptions();
                     MarkerOptions endMarkerOption = new MarkerOptions();
-                    LatLng start_latlon = new LatLng(room.getStart_lat(), room.getStart_lon());
-                    LatLng end_latlon = new LatLng(room.getEnd_lat(), room.getEnd_lon());
-
+                    LatLng start_latlon = new LatLng(room.getStart_lon(), room.getStart_lat());
+                    LatLng end_latlon = new LatLng(room.getEnd_lon(), room.getEnd_lat());
                     ImageResourceUtil util = new ImageResourceUtil();
                     Bitmap bitmap_icon = util.getBitmap(getActivity(),R.drawable.ic_place_yellow_24dp);
                     bitmap_icon = resizeMapIcons(bitmap_icon,130,130);
