@@ -47,6 +47,7 @@ public class IntroActivity extends AppCompatActivity {
                 info_id = Set.Load(IntroActivity.this,"info_id",null);
                 if( null != info_id){
                     //id있을 때 - 어플 받고 로그인이력 1번 이상
+                    Set.Save(getApplication(),"info_id", info_id);
                     getMyInfo();
                 }else{
                     intent = new Intent(IntroActivity.this, LoginActivity.class);
