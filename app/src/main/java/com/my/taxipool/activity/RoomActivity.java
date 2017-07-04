@@ -63,23 +63,25 @@ public class RoomActivity extends BaseActivity {
         TabInfo tabInfo = new TabInfo();
         tabInfo.setData(Integer.parseInt(info_id), room, sharePeopleList);
         adapter.addFragment(tabInfo, "합승정보");
-        if (state >= Room.WAIT_TOGO){
+        /*if (state >= Room.WAIT_TOGO){*/
             TabChat tabChat = new TabChat();
             tabChat.setRoom_no(room.getRoom_no());
+
+
             adapter.addFragment(tabChat, "채팅방");
-        }
+        /*}*/
 
         viewPager.setAdapter(adapter);
         /*set ViewPager end*/
 
         tab.setupWithViewPager(viewPager);
         tab.getTabAt(0).setText("합승정보");
-        if (state < 20){
+        /*if (state < 20){
             tab.setVisibility(View.GONE);
-        }else{
+        }else{*/
             tab.getTabAt(1).setText("채팅방");
             tab.setVisibility(View.VISIBLE);
-        }
+        /*}*/
     }
 
     private void getRoomInfo(final int room_no){

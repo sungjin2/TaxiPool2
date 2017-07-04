@@ -2,6 +2,7 @@ package com.my.taxipool.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,9 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.my.taxipool.MyInfo;
 import com.my.taxipool.R;
+import com.my.taxipool.util.Set;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +71,10 @@ public class TabChat extends Fragment {
                 //String userName = map.get("user").toString();
 
 //                if(userName.equals(UserDetails.username)){
-                    addMessageBox("Me:\n" + message, 1);
+                String info_id = Set.Load(getContext(), "info_id", null);
+
+                Log.d("info_id", info_id);
+                    addMessageBox(MyInfo.getNickname()+":\n" + message, 1);
 //                }else{
 //                    addMessageBox(userName + ":\n" + message, 2);
 //                }
